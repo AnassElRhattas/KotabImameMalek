@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "606914981239",
+    "project_id": "hamid-9f53b",
+    "storage_bucket": "hamid-9f53b.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:606914981239:android:0de3cdc4c27d0e67c34572",
+        "android_client_info": {
+          "package_name": "com.example.akherapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt0yHx0n_IDwmwYotFnh8X52FmmQeg5gI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

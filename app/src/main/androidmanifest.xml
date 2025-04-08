@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <uses-sdk
+        android:minSdkVersion="21"
+        android:targetSdkVersion="33" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:name=".MyApplication"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AkherApp"
+        android:hardwareAccelerated="true"
+        android:largeHeap="true"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
+        
+        <activity
+            android:name=".LoginActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".SignupActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".UsersListActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".UserDetailsActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".AdminProfileActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false"/>
+
+        <activity
+            android:name=".UserProfileActivity"
+            android:exported="true">
+        </activity>
+
+        <activity
+            android:name=".ProgressTrackingActivity"
+            android:exported="true">
+        </activity>
+
+        <activity 
+            android:name=".ScheduleManagementActivity" 
+            android:exported="true" />
+            
+        <activity 
+            android:name=".ViewScheduleActivity" 
+            android:exported="true" />
+        
+        <activity
+            android:name=".ContactUsersActivity"
+            android:exported="false"
+            android:label="مراسلة المستخدمين" />
+
+        <activity
+            android:name=".ImageViewerActivity"
+            android:theme="@style/Theme.MaterialComponents.NoActionBar"/>
+
+        <activity
+            android:name=".DocumentUploadActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"/>
+        
+        <activity
+            android:name=".SubmitComplaintActivity"
+            android:exported="false"
+            android:label="تقديم شكوى"
+            android:parentActivityName=".MainActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MainActivity" />
+        </activity>
+
+
+        <activity
+            android:name=".ManageComplaintsActivity"
+            android:exported="false"
+            android:label="إدارة الشكاوى"
+            android:parentActivityName=".AdminActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".AdminActivity" />
+        </activity>
+
+
+        <activity
+            android:name=".VerifyDocumentsActivity"
+            android:exported="false">
+            <meta-data
+                android:name="android.app.lib_name"
+                android:value="" />
+        </activity>
+
+    <provider
+        android:name="androidx.core.content.FileProvider"
+        android:authorities="com.example.akherapp.fileprovider"
+        android:exported="false"
+        android:grantUriPermissions="true">
+        <meta-data
+            android:name="android.support.FILE_PROVIDER_PATHS"
+            android:resource="@xml/file_paths" />
+    </provider>
+
+    </application>
+
+</manifest>
+

@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.drawerlayout.widget.DrawerLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layoutDirection="rtl">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/purple_800"
+                app:navigationIcon="@drawable/ic_arrow_back"
+                app:iconTint="@color/white"
+                app:title="تفاصيل المستخدم"
+                app:titleTextColor="@android:color/white"/>
+
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/white"
+                android:padding="16dp">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_gravity="center"
+                    app:cardCornerRadius="70dp"
+                    app:cardElevation="4dp"
+                    android:layout_marginBottom="16dp">
+
+                    <ImageView
+                        android:id="@+id/userImageView"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/default_profile"/>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/white"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/userFullNameText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:textColor="#000"
+                            android:textSize="24sp"
+                            android:textStyle="bold"/>
+
+                        <TextView
+                            android:id="@+id/userPhoneText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:textColor="#000"
+                            android:textSize="16sp"
+                            android:layout_marginTop="8dp"/>
+
+                        <!-- Ajouter après userPhoneText -->
+                        <TextView
+                            android:id="@+id/userFatherNameText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textAlignment="center"
+                            android:textColor="#000"
+                            android:textSize="16sp"
+                            android:layout_marginTop="8dp"/>
+
+                        <View
+                            android:layout_width="100dp"
+                            android:layout_height="2dp"
+                            android:background="?attr/colorPrimary"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="16dp"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:layout_marginTop="16dp">
+
+                            <TextView
+                                android:id="@+id/userBirthDate"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:drawablePadding="8dp"
+                                android:gravity="center"
+                                android:textColor="#000"
+                                android:textSize="16sp"
+                                android:drawableTop="@android:drawable/ic_menu_my_calendar"/>
+
+                            <TextView
+                                android:id="@+id/userAge"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:drawablePadding="8dp"
+                                android:gravity="center"
+                                android:textSize="16sp"
+                                android:textColor="#000"
+                                android:drawableTop="@android:drawable/ic_menu_today"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/white"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif"
+                            android:text="المعلم"
+                            android:textColor="@color/purple_800"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/teacherText"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textSize="16sp"
+                            android:textColor="#000"
+                            android:layout_marginTop="8dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+                <!-- After other cards, before the progress card -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:background="@color/white"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="المستندات"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/purple_800"
+                            android:layout_marginBottom="8dp"/>
+
+                        <!-- ID Card Document -->
+                        <LinearLayout
+                            android:id="@+id/idCardLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:id="@+id/idCardIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_document"/>
+
+                            <TextView
+                                android:id="@+id/idCardText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:text="بطاقة التعريف"
+                                android:textColor="#1F2937"/>
+
+                            <TextView
+                                android:id="@+id/idCardStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="غير متوفر"
+                                android:textColor="#EF4444"/>
+                        </LinearLayout>
+
+                        <!-- Photo Document -->
+                        <LinearLayout
+                            android:id="@+id/photoLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:id="@+id/photoIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_document"/>
+
+                            <TextView
+                                android:id="@+id/photoText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:text="الصورة الشخصية"
+                                android:textColor="#1F2937"/>
+
+                            <TextView
+                                android:id="@+id/photoStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="غير متوفر"
+                                android:textColor="#EF4444"/>
+                        </LinearLayout>
+
+                        <!-- School Certificate Document -->
+                        <LinearLayout
+                            android:id="@+id/certificateLayout"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:padding="8dp">
+
+                            <ImageView
+                                android:id="@+id/certificateIcon"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:src="@drawable/ic_document"/>
+
+                            <TextView
+                                android:id="@+id/certificateText"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:text="عقد الازدياد"
+                                android:textColor="#1F2937"/>
+
+                            <TextView
+                                android:id="@+id/certificateStatus"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="غير متوفر"
+                                android:textColor="#EF4444"/>
+                        </LinearLayout>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="12dp"
+                    app:cardElevation="4dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="تقدم الحفظ"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/purple_800"
+                            android:layout_marginBottom="16dp"/>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            app:hintTextColor="@color/colorPrimary"
+                            app:boxStrokeColor="@color/colorPrimary"
+                            android:textColorHint="#757575"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/week1Value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:hint="الأسبوع 1"
+                                android:inputType="number"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            app:hintTextColor="@color/colorPrimary"
+                            app:boxStrokeColor="@color/colorPrimary"
+                            android:textColorHint="#757575"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/week2Value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:hint="الأسبوع 2"
+                                android:inputType="number"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="8dp"
+                            app:hintTextColor="@color/colorPrimary"
+                            app:boxStrokeColor="@color/colorPrimary"
+                            android:textColorHint="#757575"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/week3Value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:hint="الأسبوع 3"
+                                android:inputType="number"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <com.google.android.material.textfield.TextInputLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="16dp"
+                            app:hintTextColor="@color/colorPrimary"
+                            app:boxStrokeColor="@color/colorPrimary"
+                            android:textColorHint="#757575"
+                            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/week4Value"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:textColor="#212121"
+                                android:hint="الأسبوع 4"
+                                android:inputType="number"/>
+                        </com.google.android.material.textfield.TextInputLayout>
+
+                        <!-- Add this inside the LinearLayout after other views -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/generateCertificateButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:textColor="@color/white"
+                            android:text="إنشاء الشهادة"
+                            app:icon="@drawable/ic_certificate"
+                            app:iconGravity="start"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/viewCertificateButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="16dp"
+                            android:textColor="@color/white"
+                            android:text="عرض الشهادة"
+                            app:icon="@drawable/ic_oeil"
+                            app:iconGravity="start"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/saveButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/purple_800"
+                            android:text="حفظ التقدم"
+                            android:textColor="@color/white"
+                            android:padding="12dp"
+                            app:icon="@drawable/ic_history"
+                            app:cornerRadius="8dp"/>
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/deleteUserButton"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:text="حذف المستخدم"
+                                android:textColor="@color/white"
+                                android:backgroundTint="#FF5252"
+                                app:icon="@drawable/ic_delete"
+                                app:iconTint="@color/white"
+                                android:layout_marginTop="16dp"
+                                android:layout_marginBottom="16dp"/>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        app:menu="@menu/admin_menu"/>
+
+</androidx.drawerlayout.widget.DrawerLayout>
+
+

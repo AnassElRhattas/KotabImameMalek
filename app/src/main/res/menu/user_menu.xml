@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single"
+        android:id="@+id/main_group">
+        <item
+            android:id="@+id/menu_home"
+            android:icon="@drawable/ic_home"
+            android:title="الرئيسية"
+            app:iconTint="@color/colorPrimary" />
+
+            <item
+            android:id="@+id/menu_documents"
+            android:icon="@drawable/ic_document"
+            android:title="المستندات المطلوبة"
+            app:iconTint="@color/colorPrimary" />
+
+        <item
+            android:id="@+id/menu_progress"
+            android:icon="@drawable/ic_track"
+            android:title="متابعة التقدم"
+            app:iconTint="@color/colorPrimary" />
+        <item
+            android:id="@+id/menu_schedule"
+            android:icon="@drawable/ic_schedule"
+            android:title="جدول الحصص"
+            app:iconTint="@color/colorPrimary" />
+        <item
+            android:id="@+id/menu_submit_complaint"
+            android:icon="@drawable/ic_complaints"
+            android:title="تقديم شكوى"
+            app:iconTint="@color/colorPrimary" />
+    </group>
+    <group>
+        <item
+            android:id="@+id/menu_defi_user"
+            android:icon="@drawable/ic_quran_competition"
+            android:title="إدارة المسابقات"
+            app:iconTint="@color/colorAccent2" />
+    </group>
+    <group android:id="@+id/secondary_group"
+        android:checkableBehavior="none">
+        <item
+            android:id="@+id/menu_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="الملف الشخصي"
+            app:iconTint="@color/colorPrimary" />
+        <item
+            android:id="@+id/menu_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="تسجيل الخروج"
+            app:iconTint="#FF5252" />
+    </group>
+</menu>

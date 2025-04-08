@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    
+    <group 
+        android:id="@+id/main_group"
+        android:checkableBehavior="single">
+        
+        <item
+            android:id="@+id/menu_home"
+            android:icon="@drawable/ic_home"
+            android:title="الرئيسية"
+            app:iconTint="@color/colorPrimary" />
+
+        <item
+            android:id="@+id/menu_add_news"
+            android:icon="@drawable/ic_add"
+            android:title="إضافة الأخبار"
+            app:iconTint="@color/colorPrimary" />
+    </group>
+
+    <group 
+        android:id="@+id/management_group"
+        android:checkableBehavior="single">
+        
+        <item
+            android:id="@+id/menu_schedule"
+            android:icon="@drawable/ic_schedule"
+            android:title="إدارة جدول الحصص"
+            app:iconTint="@color/colorPrimary" />
+
+        <item
+            android:id="@+id/menu_users"
+            android:icon="@drawable/ic_group"
+            android:title="الطلبة"
+            app:iconTint="@color/colorPrimary" />
+
+        <item
+            android:id="@+id/menu_contact_users"
+            android:icon="@drawable/ic_whatsapp"
+            android:title="مراسلة أولياء الطلاب"
+            app:iconTint="@color/colorAccent2" />
+
+        <!-- Add this new item -->
+        <item
+            android:id="@+id/menu_verify_documents"
+            android:icon="@drawable/ic_certificate"
+            android:title="التحقق من المستندات"
+            app:iconTint="@color/colorPrimary" />
+    </group>
+
+    <group>
+    <item
+        android:id="@+id/menu_defi"
+        android:icon="@drawable/ic_quran_competition"
+        android:title="إدارة المسابقات"
+        app:iconTint="@color/colorAccent2" />
+    </group>
+
+    <item
+        android:id="@+id/menu_complaints"
+        android:icon="@drawable/ic_complaints"
+        android:title="إدارة الشكاوى" />
+
+    <group 
+        android:id="@+id/profile_group"
+        android:checkableBehavior="single">
+        
+        <item
+            android:id="@+id/menu_profile"
+            android:icon="@drawable/ic_profile"
+            android:title="الملف الشخصي"
+            app:iconTint="@color/colorPrimary" />
+
+        <item
+            android:id="@+id/menu_logout"
+            android:icon="@drawable/ic_logout"
+            android:title="تسجيل الخروج"
+            android:textColor="@android:color/holo_red_dark"
+            app:iconTint="@android:color/holo_red_dark" />
+    </group>
+
+</menu>

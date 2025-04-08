@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="12dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="6dp"
+    app:strokeWidth="1dp"
+    app:strokeColor="#E0E0E0">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Existing image ViewPager -->
+        <FrameLayout
+            android:id="@+id/imageContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <androidx.viewpager2.widget.ViewPager2
+                android:id="@+id/imageViewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/imageIndicator"
+                android:layout_width="match_parent"
+                android:layout_height="3dp"
+                android:layout_gravity="bottom"
+                app:tabBackground="@drawable/tab_selector"
+                app:tabGravity="fill"
+                app:tabMode="fixed"
+                app:tabIndicatorHeight="0dp"
+                app:tabPaddingStart="4dp"
+                app:tabPaddingEnd="4dp"
+                android:background="@drawable/tab_indicator_background"
+                android:paddingHorizontal="8dp"/>
+        </FrameLayout>
+
+        <!-- New Video Container -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/videoRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/white"
+            android:padding="16dp">
+
+            <TextView
+                android:id="@+id/newsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textColor="#212121"
+                android:layout_marginBottom="12dp"/>
+
+            <TextView
+                android:id="@+id/newsDescription"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:textColor="#424242"
+                android:maxLines="3"
+                android:ellipsize="end"
+                android:lineSpacingExtra="4dp"
+                android:layout_marginBottom="12dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginBottom="8dp">
+
+                <TextView
+                    android:id="@+id/newsTimestamp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="13sp"
+                    android:textColor="#757575"/>
+
+                <TextView
+                    android:id="@+id/readMoreButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="قراءة المزيد..."
+                    android:textColor="@color/colorPrimary"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:padding="8dp"
+                    android:background="?attr/selectableItemBackground"/>
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"/>
+
+            <LinearLayout
+                android:id="@+id/adminControls"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="end"
+                android:visibility="visible">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnEditNews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    android:text="تعديل"
+                    android:textSize="13sp"
+                    style="@style/CustomOutlinedButton.Edit"
+                    android:layout_marginEnd="8dp"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnDeleteNews"
+                    android:layout_width="wrap_content"
+                    android:layout_height="52dp"
+                    android:text="حذف"
+                    android:textSize="13sp"
+                    style="@style/CustomOutlinedButton.Delete"/>
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>
