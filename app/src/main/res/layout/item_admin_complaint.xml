@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="4dp"
+    app:cardCornerRadius="12dp"
+    android:background="@color/black"
+    app:cardElevation="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- En-tête avec statut et date -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="12dp">
+
+            <com.google.android.material.chip.Chip
+                android:id="@+id/statusChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"/>
+
+            <TextView
+                android:id="@+id/dateText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:textSize="12sp"
+                android:textColor="@android:color/darker_gray"
+                android:gravity="end"
+                android:layout_gravity="center_vertical"/>
+        </LinearLayout>
+
+        <!-- Informations utilisateur et sujet -->
+        <TextView
+            android:id="@+id/userFullNameText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="15sp"
+            android:textColor="@color/purple_800"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:drawableStart="@drawable/ic_person"
+            android:drawablePadding="8dp"
+            android:gravity="center_vertical" />
+
+        <TextView
+            android:id="@+id/complaintSubject"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Description avec fond gris clair -->
+        <TextView
+            android:id="@+id/complaintDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:background="#F8F9FA"
+            android:textColor="@color/black"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp"
+            android:lineSpacingExtra="4dp"/>
+
+        <!-- Réponse de l'administrateur -->
+        <LinearLayout
+            android:id="@+id/adminResponseLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginBottom="16dp"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="الرد السابق:"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple_800"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/adminResponseText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:background="#F0F4F8"
+                android:padding="12dp"
+                android:lineSpacingExtra="4dp"/>
+        </LinearLayout>
+
+        <!-- Séparateur -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#E0E0E0"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- Boutons d'action -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/respondButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="الرد"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/inProgressButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="قيد المعالجة"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/resolvedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="تم الحل"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/deleteButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="حذف"
+                android:textColor="#DC3545"
+                style="@style/Widget.MaterialComponents.Button.TextButton"/>
+        </LinearLayout>
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

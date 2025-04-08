@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Outer glow -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#40C0C0C0"/>
+            <size android:width="68dp" android:height="68dp"/>
+        </shape>
+    </item>
+    
+    <!-- Main circle -->
+    <item android:left="2dp" android:right="2dp" android:top="2dp" android:bottom="2dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="32dp"
+                android:startColor="#E0E0E0"
+                android:endColor="#A0A0A0"/>
+            <size android:width="64dp" android:height="64dp"/>
+        </shape>
+    </item>
+    
+    <!-- Inner circle -->
+    <item android:left="8dp" android:right="8dp" android:top="8dp" android:bottom="8dp">
+        <shape android:shape="oval">
+            <gradient
+                android:type="radial"
+                android:gradientRadius="24dp"
+                android:startColor="#FFFFFF"
+                android:endColor="#C0C0C0"/>
+        </shape>
+    </item>
+    
+    <!-- Star icon -->
+    <item
+        android:drawable="@drawable/ic_star"
+        android:top="14dp"
+        android:bottom="14dp"
+        android:left="14dp"
+        android:right="14dp"/>
+</layer-list>

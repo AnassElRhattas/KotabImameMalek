@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">كتاب مسجد الإمام مالك</string>
+    <string name="signup_title">إنشاء حساب جديد</string>
+    <string name="select_image">اختر صورة</string>
+    <string name="first_name">الاسم الأول</string>
+    <string name="last_name">اسم العائلة</string>
+    <string name="phone">رقم الهاتف</string>
+    <string name="birth_date">تاريخ الميلاد</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="password">كلمة المرور</string>
+    <string name="confirm_password">تأكيد كلمة المرور</string>
+    <string name="signup">تسجيل</string>
+    <string name="signup_success">تم التسجيل بنجاح</string>
+    <string name="login_title">تسجيل الدخول</string>
+    <string name="login">دخول</string>
+    <string name="login_error">البريد الإلكتروني أو كلمة المرور غير صحيحة</string>
+    <string name="welcome">مرحباً %1$s %2$s</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    
+</resources>
