@@ -376,21 +376,29 @@ public class AdminActivity extends BaseActivity {
                                      List<String> imageUrls, List<String> videoUrls,
                                      ProgressDialog progressDialog) {
         News news = new News(title, description, imageUrls, videoUrls);
-        String newsId = UUID.randomUUID().toString();
-        news.setId(newsId);
-
-        db.collection("news").document(newsId)
-                .set(news)
-                .addOnSuccessListener(aVoid -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(this, "تم نشر الخبر بنجاح", Toast.LENGTH_SHORT).show();
-                    NotificationUtils.sendNotificationToAllUsers("خبر جديد", title);
-                    clearForm();
-                })
-                .addOnFailureListener(e -> {
-                    progressDialog.dismiss();
-                    Toast.makeText(this, "فشل في نشر الخبر", Toast.LENGTH_SHORT).show();
-                });
+        
+        db.collection("news")
+            .add(news)
+            .addOnSuccessListener(documentReference -> {
+                progressDialog.dismiss();
+                Toast.makeText(AdminActivity.this, "تم نشر الخبر بنجاح", Toast.LENGTH_SHORT).show();
+                
+                // Envoyer une notification à tous les utilisateurs
+                NotificationUtils.sendNotificationToAllUsers(
+                    "خبر جديد",
+                    "تم نشر خبر جديد: " + title
+                );
+                
+                // Réinitialiser les champs
+                titleInput.setText("");
+                descriptionInput.setText("");
+                selectedImagesAdapter.clearImages();
+                selectedVideosAdapter.clearVideos();
+            })
+            .addOnFailureListener(e -> {
+                progressDialog.dismiss();
+                Toast.makeText(AdminActivity.this, "فشل في نشر الخبر", Toast.LENGTH_SHORT).show();
+            });
     }
 
     private void clearForm() {

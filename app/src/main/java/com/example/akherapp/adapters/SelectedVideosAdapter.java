@@ -46,6 +46,8 @@ public class SelectedVideosAdapter extends RecyclerView.Adapter<SelectedVideosAd
         });
     }
 
+
+
     @Override
     public int getItemCount() {
         return videoUris.size();

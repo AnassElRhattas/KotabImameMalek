@@ -28,4 +28,5 @@
         <color name="red_light">#1AFF0000</color>
         <color name="orange_light">#1AFF9800</color>
         <color name="green_light">#1A4CAF50</color>
+    <color name="purple_50">#F3E5F5</color>
 </resources>

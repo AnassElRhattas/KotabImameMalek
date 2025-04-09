@@ -20,7 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         
-        // Vérifier si l'utilisateur est déjà connecté
+        // Check if user is already logged in
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
         boolean isAdmin = prefs.getBoolean("isAdmin", false);
         String userId = prefs.getString("id", null);
@@ -36,6 +36,19 @@ public class LoginActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         initializeViews();
         setupListeners();
+
+        // Check for pre-filled names from signup
+        Intent intent = getIntent();
+        if (intent != null) {
+            String firstName = intent.getStringExtra("firstName");
+            String lastName = intent.getStringExtra("lastName");
+            if (firstName != null && lastName != null) {
+                firstNameInput.setText(firstName);
+                lastNameInput.setText(lastName);
+                // Focus on password field
+                passwordInput.requestFocus();
+            }
+        }
     }
 
     private void initializeViews() {

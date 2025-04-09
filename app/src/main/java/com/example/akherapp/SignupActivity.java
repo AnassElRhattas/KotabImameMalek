@@ -41,12 +41,14 @@ public class SignupActivity extends AppCompatActivity {
     private String birthDateMillis;
     private MaterialButton signupButton, loginButton;
     private Uri selectedImageUri;
+    private FirebaseFirestore db; // Add this line
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        db = FirebaseFirestore.getInstance(); // Initialize db here
         initializeViews();
         setupListeners();
         setupTeacherSpinner();
@@ -143,6 +145,40 @@ public class SignupActivity extends AppCompatActivity {
         datePickerDialog.show();
     }
 
+    private void showExistingNameDialog(User existingUser) {
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_existing_name);
+
+        ShapeableImageView existingUserImage = dialog.findViewById(R.id.existingUserImage);
+        TextView existingUserName = dialog.findViewById(R.id.existingUserName);
+        MaterialButton btnLogin = dialog.findViewById(R.id.btnLogin);
+        MaterialButton btnCancel = dialog.findViewById(R.id.btnCancel);
+
+        existingUserName.setText(existingUser.getFirstName() + " " + existingUser.getLastName());
+        
+        if (existingUser.getProfileImageUrl() != null && !existingUser.getProfileImageUrl().isEmpty()) {
+            Glide.with(this)
+                    .load(existingUser.getProfileImageUrl())
+                    .placeholder(R.drawable.default_profile_image)
+                    .error(R.drawable.default_profile_image)
+                    .into(existingUserImage);
+        }
+
+        btnLogin.setOnClickListener(v -> {
+            dialog.dismiss();
+            // Redirect to login with pre-filled name
+            Intent intent = new Intent(this, LoginActivity.class);
+            intent.putExtra("firstName", existingUser.getFirstName());
+            intent.putExtra("lastName", existingUser.getLastName());
+            startActivity(intent);
+            finish();
+        });
+
+        btnCancel.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
+    }
+
     private void validateAndSignup() {
         String firstName = firstNameInput.getText().toString().trim();
         String lastName = lastNameInput.getText().toString().trim();
@@ -157,23 +193,43 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Vérifier si le numéro existe déjà
+        // Get Firestore instance
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        
+        // Check for name duplicates first
         db.collection("users")
-                .whereEqualTo("phone", phone)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (!queryDocumentSnapshots.isEmpty()) {
-                        // Le numéro existe déjà
-                        showExistingPhoneDialog(queryDocumentSnapshots.getDocuments().get(0).toObject(User.class));
-                    } else {
-                        // Nouveau numéro, procéder à l'inscription
-                        proceedWithSignup(firstName, lastName, phone, password);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "حدث خطأ. يرجى المحاولة مرة أخرى", Toast.LENGTH_SHORT).show();
-                });
+            .whereEqualTo("firstName", firstName)
+            .whereEqualTo("lastName", lastName)
+            .get()
+            .addOnSuccessListener(nameQuerySnapshot -> {
+                if (!nameQuerySnapshot.isEmpty()) {
+                    // Name exists, show dialog
+                    User existingUser = nameQuerySnapshot.getDocuments().get(0).toObject(User.class);
+                    showExistingNameDialog(existingUser);
+                } else {
+                    // Name is unique, check phone
+                    checkPhoneAndProceed(firstName, lastName, phone, password);
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "حدث خطأ. يرجى المحاولة مرة أخرى", Toast.LENGTH_SHORT).show();
+            });
+    }
+
+    private void checkPhoneAndProceed(String firstName, String lastName, String phone, String password) {
+        db.collection("users")
+            .whereEqualTo("phone", phone)
+            .get()
+            .addOnSuccessListener(phoneQuerySnapshot -> {
+                if (!phoneQuerySnapshot.isEmpty()) {
+                    showExistingPhoneDialog(phoneQuerySnapshot.getDocuments().get(0).toObject(User.class));
+                } else {
+                    proceedWithSignup(firstName, lastName, phone, password);
+                }
+            })
+            .addOnFailureListener(e -> {
+                Toast.makeText(this, "حدث خطأ. يرجى المحاولة مرة أخرى", Toast.LENGTH_SHORT).show();
+            });
     }
 
     private void showExistingPhoneDialog(User existingUser) {
@@ -186,7 +242,6 @@ public class SignupActivity extends AppCompatActivity {
         MaterialButton btnAccessExistingAccount = dialog.findViewById(R.id.btnAccessExistingAccount);
         MaterialButton btnContinueRegistration = dialog.findViewById(R.id.btnContinueRegistration);
 
-        // Afficher les informations de l'utilisateur existant
         existingUserName.setText(existingUser.getFirstName() + " " + existingUser.getLastName());
         existingUserPhone.setText(existingUser.getPhone());
         if (existingUser.getProfileImageUrl() != null && !existingUser.getProfileImageUrl().isEmpty()) {
@@ -199,9 +254,10 @@ public class SignupActivity extends AppCompatActivity {
 
         btnAccessExistingAccount.setOnClickListener(v -> {
             dialog.dismiss();
-            // Rediriger vers la page de connexion
+            // Redirect to login with pre-filled name
             Intent intent = new Intent(this, LoginActivity.class);
-            intent.putExtra("phone", existingUser.getPhone());
+            intent.putExtra("firstName", existingUser.getFirstName());
+            intent.putExtra("lastName", existingUser.getLastName());
             startActivity(intent);
             finish();
         });

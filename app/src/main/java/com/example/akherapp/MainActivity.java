@@ -377,21 +377,33 @@ public class MainActivity extends BaseUserActivity {
                         User user = document.toObject(User.class);
                         String userId = document.getId();
 
-                        // Ne pas afficher le compte actuel
+                        // Skip current account
                         if (!userId.equals(currentUserId)) {
                             View accountView = getLayoutInflater().inflate(R.layout.layout_linked_account, linkedAccountsContainer, false);
 
                             TextView nameText = accountView.findViewById(R.id.linkedAccountName);
                             MaterialButton switchButton = accountView.findViewById(R.id.btnSwitchAccount);
+                            ShapeableImageView profileImage = accountView.findViewById(R.id.linkedAccountImage);
 
                             nameText.setText(user.getFirstName() + " " + user.getLastName());
+
+                            // Load profile image
+                            if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                                Glide.with(this)
+                                        .load(user.getProfileImageUrl())
+                                        .placeholder(R.drawable.default_profile_image)
+                                        .error(R.drawable.default_profile_image)
+                                        .circleCrop()
+                                        .into(profileImage);
+                            } else {
+                                profileImage.setImageResource(R.drawable.default_profile_image);
+                            }
 
                             switchButton.setOnClickListener(v -> switchToAccount(userId));
                             linkedAccountsContainer.addView(accountView);
                         }
                     }
 
-                    // Ouvrir le drawer après avoir chargé les comptes
                     drawerLayout.openDrawer(GravityCompat.START);
                 })
                 .addOnFailureListener(e -> {

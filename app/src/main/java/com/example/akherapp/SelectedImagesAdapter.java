@@ -48,6 +48,10 @@ public class SelectedImagesAdapter extends RecyclerView.Adapter<SelectedImagesAd
         notifyItemInserted(imageUris.size() - 1);
     }
 
+    public void clearImages() {
+        imageUris.clear();
+        notifyDataSetChanged();
+    }
     public void removeImage(int position) {
         imageUris.remove(position);
         notifyItemRemoved(position);

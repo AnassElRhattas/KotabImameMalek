@@ -1,9 +1,14 @@
 package com.example.akherapp;
 
+import static android.content.Context.MODE_PRIVATE;
+
+import static androidx.core.content.ContextCompat.startActivity;
+
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -241,24 +246,41 @@ public class VerifyDocumentsActivity extends BaseActivity implements UserDocumen
             .setTitle("تأكيد الموافقة")
             .setMessage("هل أنت متأكد من الموافقة على هذا المستند؟")
             .setPositiveButton("نعم", (dialog, which) -> {
-                // Update document status
-                db.collection("users").document(user.getId())
-                    .update("verified_" + documentType, true)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "تمت الموافقة على المستند", Toast.LENGTH_SHORT).show();
-                        user.setDocumentVerified(documentType, true);
-                        user.setDocumentRejected(documentType, false);
-                        adapter.notifyDataSetChanged();
-                        
-                        // Check if all documents are verified
-                        checkAllDocumentsVerified(user);
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "فشل في تحديث حالة المستند", Toast.LENGTH_SHORT).show();
-                    });
+                // Appeler updateDocumentStatus au lieu de faire la mise à jour directement
+                updateDocumentStatus(user, documentType, true);
+                
+                // Vérifier si tous les documents sont validés après la mise à jour
+                checkAllDocumentsVerified(user);
             })
             .setNegativeButton("لا", null)
             .show();
+    }
+
+    private void updateDocumentStatus(User user, String documentType, boolean isApproved) {
+        // Mettre à jour le statut dans Firestore
+        db.collection("users").document(user.getId())
+            .update(
+                "documents." + documentType + "_verified", isApproved,
+                "documents." + documentType + "_rejected", !isApproved,
+                "documentsVerified", isApproved,  // Ajouter ces champs
+                "documentsRejected", !isApproved  // pour la synchronisation
+            )
+            .addOnSuccessListener(aVoid -> {
+                String message = isApproved ? 
+                    "تمت الموافقة على المستند" : 
+                    "تم رفض المستند";
+                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+                
+                // Mettre à jour l'objet User local
+                user.setDocumentVerified(documentType, isApproved);
+                user.setDocumentRejected(documentType, !isApproved);
+                
+                // Rafraîchir la liste
+                loadUsers();
+            })
+            .addOnFailureListener(e -> 
+                Toast.makeText(this, "فشل في تحديث حالة المستند", Toast.LENGTH_SHORT).show()
+            );
     }
 
     @Override
@@ -273,55 +295,85 @@ public class VerifyDocumentsActivity extends BaseActivity implements UserDocumen
             .show();
     }
 
-    private void updateDocumentStatus(User user, String documentType, boolean isApproved) {
-        db.collection("users").document(user.getId())
-            .update(
-                "documents." + documentType + "_verified", isApproved,
-                "documents." + documentType + "_rejected", !isApproved
-            )
-            .addOnSuccessListener(aVoid -> {
-                String message = isApproved ? 
-                    "تمت الموافقة على المستند" : 
-                    "تم رفض المستند";
-                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-                loadUsers();
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "فشل في تحديث حالة المستند", Toast.LENGTH_SHORT).show()
-            );
-    }
+//    private void updateDocumentStatus(User user, String documentType, boolean isApproved) {
+//        db.collection("users").document(user.getId())
+//            .update(
+//                "documents." + documentType + "_verified", isApproved,
+//                "documents." + documentType + "_rejected", !isApproved
+//            )
+//            .addOnSuccessListener(aVoid -> {
+//                String message = isApproved ?
+//                    "تمت الموافقة على المستند" :
+//                    "تم رفض المستند";
+//                Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+//                loadUsers();
+//            })
+//            .addOnFailureListener(e ->
+//                Toast.makeText(this, "فشل في تحديث حالة المستند", Toast.LENGTH_SHORT).show()
+//            );
+//    }
 
     private void checkAllDocumentsVerified(User user) {
-        boolean allVerified = user.isDocumentVerified("id_card") &&
-                            user.isDocumentVerified("photo") &&
-                            user.isDocumentVerified("school_certificate");
+        // Get fresh user data to ensure we have the latest FCM tokens
+        db.collection("users").document(user.getId())
+            .get()
+            .addOnSuccessListener(documentSnapshot -> {
+                Map<String, Object> documents = (Map<String, Object>) documentSnapshot.get("documents");
+                List<String> fcmTokens = (List<String>) documentSnapshot.get("fcmTokens");
+                
+                Log.d("VerifyDocuments", "Checking documents for user: " + user.getId());
+                Log.d("VerifyDocuments", "Documents: " + documents);
+                Log.d("VerifyDocuments", "FCM Tokens: " + fcmTokens);
 
-        if (allVerified && !user.isRegistrationCompletionNotified()) {
-            // Send notification to user
-            if (user.getFcmTokens() != null && !user.getFcmTokens().isEmpty()) {
-                for (String token : user.getFcmTokens()) {
-                    NotificationUtils.sendNotification(
-                        token,
-                        "تهانينا!",
-                        "تم التحقق من جميع مستنداتك بنجاح. اكتمل تسجيلك!"
-                    );
+                boolean allVerified = documents != null &&
+                    Boolean.TRUE.equals(documents.get("id_card_verified")) &&
+                    Boolean.TRUE.equals(documents.get("photo_verified")) &&
+                    Boolean.TRUE.equals(documents.get("school_certificate_verified")) &&
+                    !Boolean.TRUE.equals(documents.get("id_card_rejected")) &&
+                    !Boolean.TRUE.equals(documents.get("photo_rejected")) &&
+                    !Boolean.TRUE.equals(documents.get("school_certificate_rejected"));
+
+                if (allVerified) {
+                    Log.d("VerifyDocuments", "All documents verified for user: " + user.getId());
+                    
+                    // Update user status first
+                    db.collection("users").document(user.getId())
+                        .update(
+                            "documentsVerified", true,
+                            "registrationCompletionNotified", true,
+                            "registrationCompleted", true
+                        )
+                        .addOnSuccessListener(aVoid -> {
+                            if (fcmTokens != null && !fcmTokens.isEmpty()) {
+                                for (String token : fcmTokens) {
+                                    NotificationUtils.sendNotification(
+                                        token,
+                                        "تهانينا!",
+                                        "تم التحقق من جميع مستنداتك بنجاح. اكتمل تسجيلك!"
+                                    );
+                                    Log.d("VerifyDocuments", "Notification sent to token: " + token);
+                                }
+                                
+                                // Save notification to Firestore
+                                NotificationHelper.saveNotification(
+                                    user.getId(),
+                                    "تهانينا!",
+                                    "تم التحقق من جميع مستنداتك بنجاح. اكتمل تسجيلك!"
+                                );
+                            } else {
+                                Log.w("VerifyDocuments", "No FCM tokens found for user: " + user.getId());
+                            }
+                        })
+                        .addOnFailureListener(e -> 
+                            Log.e("VerifyDocuments", "Error updating user status", e)
+                        );
+                } else {
+                    Log.d("VerifyDocuments", "Not all documents are verified yet for user: " + user.getId());
                 }
-            }
-
-            // Save notification to Firestore
-            NotificationHelper.saveNotification(
-                user.getId(),
-                "تهانينا!",
-                "تم التحقق من جميع مستنداتك بنجاح. اكتمل تسجيلك!"
+            })
+            .addOnFailureListener(e -> 
+                Log.e("VerifyDocuments", "Error fetching user data", e)
             );
-
-            // Update user's notification status
-            db.collection("users").document(user.getId())
-                .update(
-                    "registrationCompletionNotified", true,
-                    "registrationCompleted", true
-                );
-        }
     }
 
     @Override

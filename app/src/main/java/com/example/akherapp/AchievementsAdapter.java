@@ -47,7 +47,7 @@ public class AchievementsAdapter extends RecyclerView.Adapter<AchievementsAdapte
         }
 
         // Show progress in title even if it's 0
-        holder.badgeTitle.setText(String.format("%s (%.0f/%.0f)",
+        holder.badgeTitle.setText(String.format("%s %.0f/%.0f",
                 achievement.getTitle(),
                 achievement.getProgress(),
                 achievement.getRequiredProgress()));
