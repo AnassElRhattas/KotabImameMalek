@@ -223,6 +223,8 @@ public class DocumentUploadActivity extends BaseUserActivity {
             } else if (id == R.id.menu_progress) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
                 finish();
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_documents) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.menu_submit_complaint) {
