@@ -5,12 +5,13 @@ import static android.content.Context.VIBRATOR_SERVICE;
 
 import static androidx.core.content.ContextCompat.getSystemService;
 import static androidx.core.content.ContextCompat.startActivity;
-
+import android.os.Looper;
 import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
@@ -22,6 +23,8 @@ import androidx.appcompat.app.ActionBarDrawerToggle;
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -38,6 +41,8 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 public class VoiceRecognitionActivity extends BaseUserActivity {
+    private static final String TAG = "VoiceRecognition";
+    private Handler handler = new Handler(Looper.getMainLooper());  // Add this line
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private static final int PERMISSION_REQUEST_CODE = 123;
@@ -119,11 +124,11 @@ public class VoiceRecognitionActivity extends BaseUserActivity {
         setupNavigationDrawer();
         // Highlight the active menu item
         navigationView.setCheckedItem(R.id.menu_voice_recognition);
-        
+
         initializeViews();
         setupSpeechRecognizer();
         setupClickListeners();
-        
+
         targetTextView.setText(targetPhrase);
         targetTextView.setTextIsSelectable(true);  // Make text selectable
     }
@@ -240,54 +245,117 @@ public class VoiceRecognitionActivity extends BaseUserActivity {
     }
 
     private void setupSpeechRecognizer() {
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+        }
+
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
+                Log.d(TAG, "Ready for speech");
                 recognizedTextView.setText("");
+                isListening = true;
             }
 
-            // Dans le RecognitionListener, modifiez onResults :
             @Override
             public void onResults(Bundle results) {
+                Log.d(TAG, "Got results");
                 ArrayList<String> matches = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
                 if (matches != null && !matches.isEmpty()) {
                     String recognizedText = matches.get(0);
-                    ((CustomAnimatedTextView) recognizedTextView).animateTextWordByWord(recognizedText);
-                    
-                    // Normalize Arabic text for comparison
+                    Log.d(TAG, "Recognized text: " + recognizedText);
+
+                    // Set the text immediately first
+                    recognizedTextView.setText(recognizedText);
+
+                    // Then animate it
+                    handler.postDelayed(() -> {
+                        ((CustomAnimatedTextView) recognizedTextView).animateTextWordByWord(recognizedText);
+                    }, 500);
+
                     String normalizedRecognized = normalizeArabicText(recognizedText);
                     String normalizedTarget = normalizeArabicText(targetPhrase);
-                    
+
                     if (normalizedRecognized.equals(normalizedTarget)) {
                         showSuccess();
                     }
+                } else {
+                    Log.d(TAG, "No recognition results");
+                    recognizedTextView.setText("لم يتم التعرف على الكلام");
                 }
-                stopListening();
+                cleanupRecognizer();
             }
 
-            private String normalizeArabicText(String text) {
-                return text.trim().replaceAll("\\s+", " ").toLowerCase();
+            @Override
+            public void onEndOfSpeech() {
+                Log.d(TAG, "End of speech");
             }
+
             @Override
             public void onError(int error) {
-                stopListening();
+                Log.e(TAG, "Speech recognition error: " + getErrorText(error));
+                String errorMessage;
+                switch (error) {
+                    case SpeechRecognizer.ERROR_NO_MATCH:
+                        errorMessage = "لم يتم التعرف على الكلام";
+                        break;
+                    case SpeechRecognizer.ERROR_NETWORK:
+                        errorMessage = "تحقق من اتصال الإنترنت";
+                        break;
+                    default:
+                        errorMessage = "حدث خطأ، حاول مرة أخرى";
+                }
+                recognizedTextView.setText(errorMessage);
+                cleanupRecognizer();
             }
 
             // Required overrides
             @Override
-            public void onBeginningOfSpeech() {}
+            public void onBeginningOfSpeech() {
+            }
+
             @Override
-            public void onRmsChanged(float rmsdB) {}
+            public void onRmsChanged(float rmsdB) {
+            }
+
             @Override
-            public void onBufferReceived(byte[] buffer) {}
+            public void onBufferReceived(byte[] buffer) {
+            }
+
             @Override
-            public void onEndOfSpeech() {}
+            public void onPartialResults(Bundle partialResults) {
+                ArrayList<String> matches = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
+                if (matches != null && !matches.isEmpty()) {
+                    String partialText = matches.get(0);
+                    if (!partialText.trim().isEmpty()) {
+                        recognizedTextView.setText(partialText);
+                    }
+                }
+            }
+
             @Override
-            public void onPartialResults(Bundle partialResults) {}
-            @Override
-            public void onEvent(int eventType, Bundle params) {}
+            public void onEvent(int eventType, Bundle params) {
+            }
         });
+    }
+
+    private String normalizeArabicText(String text) {
+        if (text == null) return "";
+
+        // Remove diacritics (tashkeel)
+        text = text.replaceAll("[\u064B-\u065F\u0670]", "");
+
+        // Normalize alef variations to simple alef
+        text = text.replaceAll("[\u0622\u0623\u0625]", "\u0627");
+
+        // Normalize teh marbuta to heh
+        text = text.replace("\u0629", "\u0647");
+
+        // Remove non-Arabic characters and extra whitespace
+        text = text.replaceAll("[^\\u0621-\\u063A\\u0641-\\u064A\\s]", "");
+
+        return text.trim().replaceAll("\\s+", " ").toLowerCase();
     }
 
     private void setupClickListeners() {
@@ -305,65 +373,140 @@ public class VoiceRecognitionActivity extends BaseUserActivity {
     }
 
     private void startListening() {
+        setupSpeechRecognizer();
+
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar"); // Set to Arabic
-        
-        speechRecognizer.startListening(intent);
-        isListening = true;
-        recordButton.setImageResource(R.drawable.ic_stop);
-        micAnimationView.playAnimation();
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "ar-SA"); // Specific Arabic locale
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, "ar");
+        intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, true);
+        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 3);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_MINIMUM_LENGTH_MILLIS, 1000);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_COMPLETE_SILENCE_LENGTH_MILLIS, 1500);
+        intent.putExtra(RecognizerIntent.EXTRA_SPEECH_INPUT_POSSIBLY_COMPLETE_SILENCE_LENGTH_MILLIS, 1000);
+
+        try {
+            isListening = true;
+            recordButton.setImageResource(R.drawable.ic_stop);
+            micAnimationView.playAnimation();
+            speechRecognizer.startListening(intent);
+        } catch (Exception e) {
+            Log.e(TAG, "Error starting speech recognition", e);
+            cleanupRecognizer();
+            Toast.makeText(this, "خطأ في بدء التسجيل", Toast.LENGTH_SHORT).show();
+        }
     }
 
+
     private void stopListening() {
-        speechRecognizer.stopListening();
+        if (speechRecognizer != null) {
+            speechRecognizer.stopListening();
+        }
+        cleanupRecognizer();
+    }
+
+    private void cleanupRecognizer() {
         isListening = false;
         recordButton.setImageResource(R.drawable.ic_mic);
         micAnimationView.pauseAnimation();
+        micAnimationView.cancelAnimation();
+        micAnimationView.setProgress(0);
+
+        if (speechRecognizer != null) {
+            speechRecognizer.destroy();
+            speechRecognizer = null;
+        }
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        cleanupRecognizer();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        cleanupRecognizer();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                startListening();
+            }
+        }
+    }
+
+    // Add after cleanupRecognizer() method
     private void showSuccess() {
         successCheckmark.setVisibility(View.VISIBLE);
         successCheckmark.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in));
-        
+
         Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
         if (vibrator != null) {
             vibrator.vibrate(200);
         }
-        
+
         // Hide checkmark after delay
-        successCheckmark.postDelayed(() -> {
+        new Handler().postDelayed(() -> {
             successCheckmark.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_out));
             successCheckmark.setVisibility(View.GONE);
         }, 2000);
     }
 
     private boolean checkPermission() {
-        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) 
+        return ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 == PackageManager.PERMISSION_GRANTED;
     }
 
+    // Remove duplicate setupSpeechRecognizer() method and keep only one
+    // Fix the requestPermission() method syntax
     private void requestPermission() {
-        ActivityCompat.requestPermissions(this, 
-                new String[]{Manifest.permission.RECORD_AUDIO}, 
-                PERMISSION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.RECORD_AUDIO},
+                PERMISSION_REQUEST_CODE
+        );
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (speechRecognizer != null) {
-            speechRecognizer.destroy();
+    private String getErrorText(int errorCode) {
+        String message;
+        switch (errorCode) {
+            case SpeechRecognizer.ERROR_AUDIO:
+                message = "Audio recording error";
+                break;
+            case SpeechRecognizer.ERROR_CLIENT:
+                message = "Client side error";
+                break;
+            case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
+                message = "Insufficient permissions";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK:
+                message = "Network error";
+                break;
+            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
+                message = "Network timeout";
+                break;
+            case SpeechRecognizer.ERROR_NO_MATCH:
+                message = "No match";
+                break;
+            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
+                message = "RecognitionService busy";
+                break;
+            case SpeechRecognizer.ERROR_SERVER:
+                message = "Error from server";
+                break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
+                message = "No speech input";
+                break;
+            default:
+                message = "Unknown error";
+                break;
         }
+        return message;
     }
-
-    @Override
-        public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-            if (requestCode == PERMISSION_REQUEST_CODE) {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    startListening();
-                }
-            }
-        }
 }

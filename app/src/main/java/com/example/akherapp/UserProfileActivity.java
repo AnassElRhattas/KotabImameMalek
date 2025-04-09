@@ -1,7 +1,9 @@
 package com.example.akherapp;
 
+import static android.app.Activity.RESULT_OK;
 import static android.content.Context.MODE_PRIVATE;
 
+import static androidx.core.app.ActivityCompat.startActivityForResult;
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.app.DatePickerDialog;
@@ -149,6 +151,50 @@ public class UserProfileActivity extends BaseUserActivity {
             }
             return true;
         });
+
+        // Charger les données utilisateur dans le nav header
+        View headerView = navigationView.getHeaderView(0);
+        TextView nameView = headerView.findViewById(R.id.nav_header_name);
+        TextView roleView = headerView.findViewById(R.id.nav_header_role);
+        TextView phoneView = headerView.findViewById(R.id.nav_header_phone);
+        ShapeableImageView profileImageView = headerView.findViewById(R.id.nav_header_image);
+
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String userId = prefs.getString("id", null);
+
+        if (userId != null) {
+            db.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            User user = documentSnapshot.toObject(User.class);
+                            if (user != null) {
+                                // Afficher le nom complet
+                                String fullName = user.getFirstName() + " " + user.getLastName();
+                                nameView.setText(fullName.trim());
+                                phoneView.setText(user.getPhone());
+                                // Afficher le rôle
+                                roleView.setText("طالب");
+
+                                // Charger l'image de profil
+                                String imageUrl = user.getProfileImageUrl();
+                                if (imageUrl != null && !imageUrl.isEmpty()) {
+                                    Glide.with(this)
+                                            .load(imageUrl)
+                                            .placeholder(R.drawable.default_profile_image)
+                                            .error(R.drawable.default_profile_image)
+                                            .circleCrop()
+                                            .into(profileImageView);
+                                } else {
+                                    profileImageView.setImageResource(R.drawable.default_profile_image);
+                                }
+                            }
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "خطأ في تحميل معلومات المستخدم", Toast.LENGTH_SHORT).show();
+                    });
+        }
 
         // Set click listeners
         birthDateText.setOnClickListener(v -> showDatePicker());
@@ -393,6 +439,7 @@ public class UserProfileActivity extends BaseUserActivity {
                     invalidateOptionsMenu(); // Mettre à jour le menu
                 });
     }
+    @Override
     protected void showLinkedAccounts() {
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
         String currentUserId = prefs.getString("id", "");
@@ -418,21 +465,33 @@ public class UserProfileActivity extends BaseUserActivity {
                         User user = document.toObject(User.class);
                         String userId = document.getId();
 
-                        // Ne pas afficher le compte actuel
+                        // Skip current account
                         if (!userId.equals(currentUserId)) {
                             View accountView = getLayoutInflater().inflate(R.layout.layout_linked_account, linkedAccountsContainer, false);
 
                             TextView nameText = accountView.findViewById(R.id.linkedAccountName);
                             MaterialButton switchButton = accountView.findViewById(R.id.btnSwitchAccount);
+                            ShapeableImageView profileImage = accountView.findViewById(R.id.linkedAccountImage);
 
                             nameText.setText(user.getFirstName() + " " + user.getLastName());
+
+                            // Load profile image
+                            if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                                Glide.with(this)
+                                        .load(user.getProfileImageUrl())
+                                        .placeholder(R.drawable.default_profile_image)
+                                        .error(R.drawable.default_profile_image)
+                                        .circleCrop()
+                                        .into(profileImage);
+                            } else {
+                                profileImage.setImageResource(R.drawable.default_profile_image);
+                            }
 
                             switchButton.setOnClickListener(v -> switchToAccount(userId));
                             linkedAccountsContainer.addView(accountView);
                         }
                     }
 
-                    // Ouvrir le drawer après avoir chargé les comptes
                     drawerLayout.openDrawer(GravityCompat.START);
                 })
                 .addOnFailureListener(e -> {
