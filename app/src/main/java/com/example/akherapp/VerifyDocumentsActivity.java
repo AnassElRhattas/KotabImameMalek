@@ -286,14 +286,49 @@ public class VerifyDocumentsActivity extends BaseActivity implements UserDocumen
     @Override
     public void onRejectDocument(User user, String documentType) {
         new MaterialAlertDialogBuilder(this)
-            .setTitle("تأكيد الرفض")
-            .setMessage("هل أنت متأكد من رفض هذا المستند؟")
-            .setPositiveButton("نعم", (dialog, which) -> {
-                updateDocumentStatus(user, documentType, false);
-            })
-            .setNegativeButton("لا", null)
-            .show();
+                .setTitle("تأكيد الرفض")
+                .setMessage("هل أنت متأكد من رفض هذا المستند؟")
+                .setPositiveButton("نعم", (dialog, which) -> {
+                    updateDocumentStatus(user, documentType, false);
+
+                    // Récupérer les tokens FCM après avoir rejeté le document
+                    db.collection("users").document(user.getId())
+                            .get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                List<String> fcmTokens = (List<String>) documentSnapshot.get("fcmTokens");
+
+                                if (fcmTokens != null && !fcmTokens.isEmpty()) {
+                                    String documentLabel = getDocumentLabel(documentType);
+                                    String title = "تم رفض المستند";
+                                    String message = "تم رفض مستندك: " + documentLabel + ". الرجاء إعادة رفعه بشكل صحيح.";
+
+                                    for (String token : fcmTokens) {
+                                        NotificationUtils.sendNotification(token, title, message);
+                                    }
+
+                                    // Sauvegarder la notification dans Firestore (si tu as déjà cette méthode)
+                                    NotificationHelper.saveNotification(user.getId(), title, message);
+                                } else {
+                                    Log.w("RejectDocument", "Aucun token FCM trouvé pour l'utilisateur: " + user.getId());
+                                }
+                            })
+                            .addOnFailureListener(e ->
+                                    Log.e("RejectDocument", "Erreur lors de la récupération des tokens FCM", e)
+                            );
+                })
+                .setNegativeButton("لا", null)
+                .show();
     }
+
+    private String getDocumentLabel(String type) {
+        switch (type) {
+            case "id_card": return "بطاقة الهوية";
+            case "photo": return "الصورة الشخصية";
+            case "school_certificate": return "عقد الازدياد";
+            default: return "مستند غير معروف";
+        }
+    }
+
 
 //    private void updateDocumentStatus(User user, String documentType, boolean isApproved) {
 //        db.collection("users").document(user.getId())
