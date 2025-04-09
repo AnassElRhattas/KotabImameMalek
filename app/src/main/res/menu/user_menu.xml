@@ -32,6 +32,12 @@
             app:iconTint="@color/colorPrimary" />
     </group>
     <group>
+
+        <item
+            android:id="@+id/menu_voice_recognition"
+            android:icon="@drawable/ic_mic"
+            android:title="تدريب النطق"
+            app:iconTint="@color/colorPrimary" />
         <item
             android:id="@+id/menu_defi_user"
             android:icon="@drawable/ic_quran_competition"

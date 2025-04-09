@@ -62,6 +62,7 @@ dependencies {
     implementation("com.google.firebase:firebase-messaging:23.4.0")
     implementation("com.google.firebase:firebase-auth:22.3.1")
     implementation("com.google.firebase:firebase-analytics:21.5.0")
+    implementation ("com.airbnb.android:lottie:6.1.0")
     
     // Google Auth
     implementation(platform("com.google.firebase:firebase-bom:32.7.1"))

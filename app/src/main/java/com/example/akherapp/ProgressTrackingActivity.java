@@ -179,6 +179,8 @@ public class ProgressTrackingActivity extends BaseUserActivity {
                 finish();
             } else if (id == R.id.menu_progress) {
                 drawerLayout.closeDrawer(GravityCompat.START);
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_documents) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
             } else if (id == R.id.menu_submit_complaint) {

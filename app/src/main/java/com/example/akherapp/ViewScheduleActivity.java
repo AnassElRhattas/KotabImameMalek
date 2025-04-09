@@ -104,6 +104,8 @@ public class ViewScheduleActivity extends BaseUserActivity {
             } else if (id == R.id.menu_progress) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
                 finish();
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_schedule) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.menu_documents) {

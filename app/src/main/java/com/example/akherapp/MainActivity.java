@@ -215,6 +215,8 @@ public class MainActivity extends BaseUserActivity {
                 startActivity(new Intent(this, UsersListActivity.class));
             } else if (id == R.id.menu_contact_users && isAdmin) {
                 startActivity(new Intent(this, ContactUsersActivity.class));
+            } else if (id == R.id.menu_voice_recognition && !isAdmin) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_documents && !isAdmin) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
             } else if (id == R.id.menu_complaints && isAdmin) {

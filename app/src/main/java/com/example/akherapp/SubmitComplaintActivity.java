@@ -146,6 +146,8 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                 finish();
             } else if (id == R.id.menu_complaints) {
                 drawerLayout.closeDrawer(GravityCompat.START);
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_profile) {
                 startActivity(new Intent(this, UserProfileActivity.class));
                 finish();
