@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="هذا الرقم مستخدم بالفعل"
+        android:text="يوجد حساب بنفس الاسم"
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
@@ -50,13 +50,6 @@
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/existingUserPhone"
-                    android:layout_width="match_parent"
-                    android:textColor="@color/black"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp" />
-
             </LinearLayout>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
@@ -68,23 +61,22 @@
         android:layout_marginTop="16dp">
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnAccessExistingAccount"
+            android:id="@+id/btnLogin"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:textColor="@color/white"
             android:layout_marginEnd="8dp"
-            android:text="الدخول إلى الحساب" />
+            android:text="تسجيل الدخول" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnContinueRegistration"
+            android:id="@+id/btnCancel"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="8dp"
             android:textColor="@color/purple_800"
-            android:text="متابعة التسجيل"
+            android:text="إلغاء"
             style="@style/Widget.MaterialComponents.Button.OutlinedButton" />
-
     </LinearLayout>
 </LinearLayout>

@@ -456,6 +456,9 @@ public class ProgressTrackingActivity extends BaseUserActivity {
         rankingRecyclerView = findViewById(R.id.rankingRecyclerView);
         rankingRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
+        // Get current user ID
+        String currentUserId = getSharedPreferences("user_prefs", MODE_PRIVATE).getString("id", "");
+
         // Récupérer uniquement les utilisateurs avec le rôle "student"
         db.collection("users")
                 .whereEqualTo("role", "student")
@@ -466,6 +469,8 @@ public class ProgressTrackingActivity extends BaseUserActivity {
                     for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                         User user = document.toObject(User.class);
                         if (user != null) {
+                            // Set the user ID
+                            user.setId(document.getId());
                             float totalProgress = 0f;
                             Float week1 = user.getWeek1Progress();
                             Float week2 = user.getWeek2Progress();
@@ -489,18 +494,11 @@ public class ProgressTrackingActivity extends BaseUserActivity {
                             Float.compare(b.getTotalProgress(), a.getTotalProgress()));
 
                     if (!rankings.isEmpty()) {
-                        RankingAdapter adapter = new RankingAdapter(rankings);
+                        RankingAdapter adapter = new RankingAdapter(rankings, currentUserId);
                         rankingRecyclerView.setAdapter(adapter);
                         rankingRecyclerView.setVisibility(View.VISIBLE);
-
-                        // Log pour déboguer
-                        for (UserRanking ranking : rankings) {
-                            Log.d("Ranking", "User: " + ranking.getUser().getFirstName() +
-                                    " Progress: " + ranking.getTotalProgress());
-                        }
                     } else {
                         rankingRecyclerView.setVisibility(View.GONE);
-                        Log.d("Ranking", "No rankings available");
                     }
                 })
                 .addOnFailureListener(e -> {

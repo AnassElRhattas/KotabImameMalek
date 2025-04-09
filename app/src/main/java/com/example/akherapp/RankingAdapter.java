@@ -10,17 +10,11 @@ import java.util.List;
 
 public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.RankingViewHolder> {
     private List<UserRanking> rankings;
+    private String currentUserId;
 
-    public RankingAdapter(List<UserRanking> rankings) {
+    public RankingAdapter(List<UserRanking> rankings, String currentUserId) {
         this.rankings = rankings;
-    }
-
-    @NonNull
-    @Override
-    public RankingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_ranking, parent, false);
-        return new RankingViewHolder(view);
+        this.currentUserId = currentUserId;
     }
 
     @Override
@@ -37,6 +31,21 @@ public class RankingAdapter extends RecyclerView.Adapter<RankingAdapter.RankingV
         
         // Set progress
         holder.progressText.setText(String.format("%.0f آية", ranking.getTotalProgress()));
+
+        // Highlight current user's row
+        if (user.getId() != null && user.getId().equals(currentUserId)) {
+            holder.itemView.setBackgroundColor(holder.itemView.getContext().getResources().getColor(R.color.purple_50));
+        } else {
+            holder.itemView.setBackgroundColor(holder.itemView.getContext().getResources().getColor(android.R.color.white));
+        }
+    }
+
+    @NonNull
+    @Override
+    public RankingViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_ranking, parent, false);
+        return new RankingViewHolder(view);
     }
 
     @Override
