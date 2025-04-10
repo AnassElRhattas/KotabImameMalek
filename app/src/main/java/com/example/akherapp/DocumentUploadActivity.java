@@ -4,18 +4,15 @@ import static android.content.Context.MODE_PRIVATE;
 
 import static androidx.activity.result.ActivityResultCallerKt.registerForActivityResult;
 import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
-import static androidx.core.app.ActivityCompat.invalidateOptionsMenu;
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
@@ -23,10 +20,10 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.imageview.ShapeableImageView;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -39,6 +36,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 
 public class DocumentUploadActivity extends BaseUserActivity {
+    private static final String PREF_FIRST_TIME = "first_time_doc_upload";
     private MaterialButton btnUploadDoc1, btnUploadDoc2, btnUploadDoc3, btnSubmit;
     private Uri doc1Uri, doc2Uri, doc3Uri;
     private FirebaseStorage storage;
@@ -73,7 +71,8 @@ public class DocumentUploadActivity extends BaseUserActivity {
         setupToolbar();
         setupNavigationDrawer();
         setupListeners();
-        checkExistingDocuments(); // Add this line
+        checkExistingDocuments();
+        setupTutorial(); // Add this line
         navigationView.setCheckedItem(R.id.menu_documents);
     }
 
@@ -229,8 +228,6 @@ public class DocumentUploadActivity extends BaseUserActivity {
             } else if (id == R.id.menu_progress) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
                 finish();
-            } else if (id == R.id.menu_voice_recognition) {
-                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_documents) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.menu_submit_complaint) {
@@ -376,104 +373,80 @@ public class DocumentUploadActivity extends BaseUserActivity {
         btnSubmit.setText("إرسال");
     }
 
-    protected void checkLinkedAccounts() {
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String currentUserId = prefs.getString("id", "");
-        String phone = prefs.getString("phone", "");
-
-        if (TextUtils.isEmpty(phone)) {
-            return;
-        }
-
-        db.collection("users")
-                .whereEqualTo("phone", phone)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    boolean foundLinkedAccounts = false;
-                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
-                        if (!doc.getId().equals(currentUserId)) {
-                            foundLinkedAccounts = true;
-                            break;
-                        }
-                    }
-
-                    prefs.edit().putBoolean("has_linked_accounts", foundLinkedAccounts).apply();
-                    invalidateOptionsMenu(); // Mettre à jour le menu
-                });
-    }
-    @Override
-    protected void showLinkedAccounts() {
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String currentUserId = prefs.getString("id", "");
-        String phone = prefs.getString("phone", "");
-
-        if (TextUtils.isEmpty(phone)) {
-            Toast.makeText(this, "خطأ في تحميل الحسابات المرتبطة", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        db.collection("users")
-                .whereEqualTo("phone", phone)
-                .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    View headerView = navigationView.getHeaderView(0);
-                    TextView linkedAccountsTitle = headerView.findViewById(R.id.linkedAccountsTitle);
-                    LinearLayout linkedAccountsContainer = headerView.findViewById(R.id.linkedAccountsContainer);
-
-                    linkedAccountsTitle.setVisibility(View.VISIBLE);
-                    linkedAccountsContainer.removeAllViews();
-
-                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
-                        User user = document.toObject(User.class);
-                        String userId = document.getId();
-
-                        // Skip current account
-                        if (!userId.equals(currentUserId)) {
-                            View accountView = getLayoutInflater().inflate(R.layout.layout_linked_account, linkedAccountsContainer, false);
-
-                            TextView nameText = accountView.findViewById(R.id.linkedAccountName);
-                            MaterialButton switchButton = accountView.findViewById(R.id.btnSwitchAccount);
-                            ShapeableImageView profileImage = accountView.findViewById(R.id.linkedAccountImage);
-
-                            nameText.setText(user.getFirstName() + " " + user.getLastName());
-
-                            // Load profile image
-                            if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
-                                Glide.with(this)
-                                        .load(user.getProfileImageUrl())
-                                        .placeholder(R.drawable.default_profile_image)
-                                        .error(R.drawable.default_profile_image)
-                                        .circleCrop()
-                                        .into(profileImage);
-                            } else {
-                                profileImage.setImageResource(R.drawable.default_profile_image);
-                            }
-
-                            switchButton.setOnClickListener(v -> switchToAccount(userId));
-                            linkedAccountsContainer.addView(accountView);
-                        }
-                    }
-
-                    drawerLayout.openDrawer(GravityCompat.START);
-                })
-                .addOnFailureListener(e -> {
-                    Log.e("MainActivity", "Error loading linked accounts", e);
-                    Toast.makeText(this, "خطأ في تحميل الحسابات المرتبطة", Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    protected void switchToAccount(String userId) {
-        // Sauvegarder le nouvel ID utilisateur
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        prefs.edit().putString("id", userId).apply();
-
-        // Redémarrer l'activité
-        Intent intent = new Intent(this, MainActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-        startActivity(intent);
-        finish();
-    }
     private interface UriConsumer {
         void accept(Uri uri);
     }
+
+    private void setupTutorial() {
+        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        boolean isFirstTime = prefs.getBoolean(PREF_FIRST_TIME, true);
+        
+        if (isFirstTime) {
+            new TapTargetSequence(this)
+                .targets(
+                    TapTarget.forView(btnUploadDoc1, "بطاقة الهوية", "قم برفع صورة بطاقة الهوية الخاصة بك هنا")
+                        .outerCircleColor(R.color.purple_800)
+                        .outerCircleAlpha(0.96f)
+                        .targetCircleColor(R.color.white)
+                        .titleTextSize(20)
+                        .titleTextColor(R.color.white)
+                        .descriptionTextSize(16)
+                        .descriptionTextColor(R.color.white)
+                        .textColor(R.color.white)
+                        .dimColor(R.color.black)
+                        .drawShadow(true)
+                        .cancelable(false)
+                        .tintTarget(true)
+                        .transparentTarget(true),
+                    TapTarget.forView(btnUploadDoc2, "الصورة الشخصية", "قم برفع صورتك الشخصية هنا")
+                        .outerCircleColor(R.color.purple_800)
+                        .outerCircleAlpha(0.96f)
+                        .targetCircleColor(R.color.white)
+                        .titleTextSize(20)
+                        .titleTextColor(R.color.white)
+                        .descriptionTextSize(16)
+                        .descriptionTextColor(R.color.white)
+                        .textColor(R.color.white)
+                        .dimColor(R.color.black)
+                        .drawShadow(true)
+                        .cancelable(false)
+                        .tintTarget(true)
+                        .transparentTarget(true),
+                    TapTarget.forView(btnUploadDoc3, "عقد الازدياد", "قم برفع عقد الازدياد هنا")
+                        .outerCircleColor(R.color.purple_800)
+                        .outerCircleAlpha(0.96f)
+                        .targetCircleColor(R.color.white)
+                        .titleTextSize(20)
+                        .titleTextColor(R.color.white)
+                        .descriptionTextSize(16)
+                        .descriptionTextColor(R.color.white)
+                        .textColor(R.color.white)
+                        .dimColor(R.color.black)
+                        .drawShadow(true)
+                        .cancelable(false)
+                        .tintTarget(true)
+                        .transparentTarget(true)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceFinish() {
+                        SharedPreferences.Editor editor = getSharedPreferences("app_prefs", MODE_PRIVATE).edit();
+                        editor.putBoolean(PREF_FIRST_TIME, false);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                        // Do nothing
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        // Do nothing
+                    }
+                }).start();
+        }
+    }
+
+    // Remove the entire showTutorial() method from here
 }
