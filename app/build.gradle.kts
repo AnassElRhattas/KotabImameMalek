@@ -78,6 +78,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("de.hdodenhof:circleimageview:3.1.0")
     implementation ("com.github.chrisbanes:PhotoView:2.3.0")
+    implementation ("com.getkeepsafe.taptargetview:taptargetview:1.13.3")
     
     // Mise à jour des dépendances Google Play Services
     implementation("com.google.android.gms:play-services-base:18.2.0")
