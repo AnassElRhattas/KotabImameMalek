@@ -20,7 +20,7 @@ public class BaseActivity extends AppCompatActivity {
             SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
             String userId = prefs.getString("id", null);
             if (userId != null) {
-                NotificationHelper.showNotificationsDialog(this, userId);
+                NotificationHelper.showNotificationsDialog(this, "admin");
             }
             return true;
         }
