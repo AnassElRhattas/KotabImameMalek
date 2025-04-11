@@ -1,6 +1,7 @@
 package com.example.akherapp;
 
 import static android.content.Context.MODE_PRIVATE;
+import static androidx.core.app.ActivityCompat.invalidateOptionsMenu;
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Intent;
@@ -108,6 +109,8 @@ public class ViewScheduleActivity extends BaseUserActivity {
                 startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_schedule) {
                 drawerLayout.closeDrawer(GravityCompat.START);
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_documents) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
             } else if (id == R.id.menu_documents) {

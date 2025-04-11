@@ -121,12 +121,14 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     app:cardCornerRadius="16dp"
+                    android:visibility="gone"
                     app:cardElevation="2dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
+                        android:visibility="gone"
                         android:padding="20dp">
 
                         <TextView
@@ -136,12 +138,14 @@
                             android:textSize="20sp"
                             android:textColor="#1F2937"
                             android:textStyle="bold"
+                            android:visibility="gone"
                             android:layout_marginBottom="16dp"/>
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/selectedVideosRecyclerView"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:visibility="gone"
                             android:minHeight="100dp"/>
 
                         <com.google.android.material.button.MaterialButton
@@ -151,6 +155,7 @@
                             android:text="اختر الفيديوهات"
                             android:textSize="11sp"
                             app:cornerRadius="24dp"
+                            android:visibility="gone"
                             app:icon="@drawable/ic_video"
                             app:iconGravity="textStart"
                             style="@style/Widget.MaterialComponents.Button.OutlinedButton"

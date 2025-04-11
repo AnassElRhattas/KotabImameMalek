@@ -3,22 +3,29 @@ package com.example.akherapp;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.akherapp.utils.NotificationUtils;
+import com.getkeepsafe.taptargetview.TapTarget;
+import com.getkeepsafe.taptargetview.TapTargetSequence;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -33,6 +40,7 @@ import java.util.Locale;
 
 public class SignupActivity extends AppCompatActivity {
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final String PREF_FIRST_TIME_SIGNUP = "first_time_signup";
     private TextInputEditText firstNameInput, lastNameInput, phoneInput, passwordInput, confirmPasswordInput;
     private EditText birthdateInput;
     private AutoCompleteTextView teacherSpinner;
@@ -52,6 +60,7 @@ public class SignupActivity extends AppCompatActivity {
         initializeViews();
         setupListeners();
         setupTeacherSpinner();
+        setupTutorial();
     }
 
     // Ajouter ces variables de classe
@@ -347,9 +356,28 @@ public class SignupActivity extends AppCompatActivity {
                 .addOnSuccessListener(aVoid -> {
                     progressDialog.dismiss();
 
-                    // Envoyer une notification à l'admin
+                    // Envoyer et stocker une notification à l'admin
                     String fullName = firstName + " " + lastName;
                     NotificationUtils.sendNewUserNotification(fullName);
+                    
+                    // Créer et sauvegarder la notification
+                    Map<String, Object> notification = new HashMap<>();
+                    notification.put("title", "طالب جديد");
+                    notification.put("message", "تم تسجيل " + fullName + " في الكتاب");
+                    notification.put("timestamp", new Date());
+                    notification.put("type", "new_user");
+                    notification.put("userId", "admin"); // Pour identifier que c'est pour l'admin
+                
+                    notification.put("studentId", userId); // Pour référencer l'étudiant concerné
+
+                    db.collection("notifications")
+                        .add(notification)
+                        .addOnSuccessListener(documentReference -> {
+                            Log.d("SignupActivity", "Notification stored successfully");
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("SignupActivity", "Error storing notification", e);
+                        });
 
                     Toast.makeText(SignupActivity.this,
                             "تم إنشاء الحساب بنجاح", Toast.LENGTH_SHORT).show();
@@ -426,6 +454,90 @@ public class SignupActivity extends AppCompatActivity {
         return isValid;
     }
 
+    private void setupTutorial() {
+        SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
+        boolean isFirstTime = prefs.getBoolean(PREF_FIRST_TIME_SIGNUP, true);
+        
+        if (isFirstTime) {
+            ScrollView scrollView = findViewById(R.id.scrollView);
+            
+            new TapTargetSequence(this)
+                .targets(
+                    TapTarget.forView(btnSelectImage, "الصورة الشخصية", "اختر صورتك الشخصية هنا")
+                        .outerCircleColor(R.color.purple_800)
+                        .targetCircleColor(R.color.white)
+                        .titleTextSize(20)
+                        .descriptionTextSize(16)
+                        .cancelable(true)
+                        .transparentTarget(true),
+                    TapTarget.forView(firstNameInput, "الاسم الأول", "أدخل اسمك الأول هنا")
+                        .outerCircleColor(R.color.purple_800)
+                        .targetCircleColor(R.color.white)
+                        .titleTextSize(20)
+                        .descriptionTextSize(16)
+                        .cancelable(true)
+                        .transparentTarget(true),
+                    TapTarget.forView(lastNameInput, "اسم العائلة", "أدخل اسم عائلتك هنا")
+                        .outerCircleColor(R.color.purple_800)
+                        .targetCircleColor(R.color.white)
+                        .titleTextSize(20)
+                        .descriptionTextSize(16)
+                        .cancelable(true)
+                        .transparentTarget(true)
+                )
+                .listener(new TapTargetSequence.Listener() {
+                    @Override
+                    public void onSequenceStep(TapTarget lastTarget, boolean targetClicked) {
+                        // Get the current view based on which target is being shown
+                        View currentView = null;
+                        if (lastTarget.equals(TapTarget.forView(btnSelectImage, "", ""))) {
+                            currentView = btnSelectImage;
+                        } else if (lastTarget.equals(TapTarget.forView(firstNameInput, "", ""))) {
+                            currentView = firstNameInput;
+                        } else if (lastTarget.equals(TapTarget.forView(lastNameInput, "", ""))) {
+                            currentView = lastNameInput;
+                        } else if (lastTarget.equals(TapTarget.forView(fatherFirstNameInput, "", ""))) {
+                            currentView = fatherFirstNameInput;
+                        } else if (lastTarget.equals(TapTarget.forView(fatherLastNameInput, "", ""))) {
+                            currentView = fatherLastNameInput;
+                        } else if (lastTarget.equals(TapTarget.forView(phoneInput, "", ""))) {
+                            currentView = phoneInput;
+                        } else if (lastTarget.equals(TapTarget.forView(birthdateInput, "", ""))) {
+                            currentView = birthdateInput;
+                        } else if (lastTarget.equals(TapTarget.forView(teacherSpinner, "", ""))) {
+                            currentView = teacherSpinner;
+                        } else if (lastTarget.equals(TapTarget.forView(passwordInput, "", ""))) {
+                            currentView = passwordInput;
+                        } else if (lastTarget.equals(TapTarget.forView(confirmPasswordInput, "", ""))) {
+                            currentView = confirmPasswordInput;
+                        } else if (lastTarget.equals(TapTarget.forView(signupButton, "", ""))) {
+                            currentView = signupButton;
+                        }
+
+                        // Scroll to the current view if found
+                        if (currentView != null) {
+                            int[] location = new int[2];
+                            currentView.getLocationInWindow(location);
+                            scrollView.smoothScrollTo(0, location[1] - 200);
+                        }
+                    }
+
+                    @Override
+                    public void onSequenceFinish() {
+                        SharedPreferences.Editor editor = getSharedPreferences("app_prefs", MODE_PRIVATE).edit();
+                        editor.putBoolean(PREF_FIRST_TIME_SIGNUP, false);
+                        editor.apply();
+                    }
+
+                    @Override
+                    public void onSequenceCanceled(TapTarget lastTarget) {
+                        SharedPreferences.Editor editor = getSharedPreferences("app_prefs", MODE_PRIVATE).edit();
+                        editor.putBoolean(PREF_FIRST_TIME_SIGNUP, false);
+                        editor.apply();
+                    }
+                }).start();
+        }
+    }
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

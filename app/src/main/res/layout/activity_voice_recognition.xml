@@ -59,6 +59,7 @@
                         android:paddingHorizontal="16dp"
                         android:textIsSelectable="true"/>
 
+
                     <com.example.akherapp.CustomAnimatedTextView
                         android:id="@+id/recognizedTextView"
                         android:layout_width="match_parent"

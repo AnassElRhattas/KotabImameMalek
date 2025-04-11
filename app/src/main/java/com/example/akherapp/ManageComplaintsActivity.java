@@ -12,6 +12,8 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.akherapp.utils.NotificationUtils;
+import com.example.akherapp.utils.NotificationHelper;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AlertDialog;
@@ -270,19 +272,44 @@ public class ManageComplaintsActivity extends AppCompatActivity implements Compl
 
     private void updateComplaintResponse(Complaint complaint, String response) {
         db.collection("complaints")
-            .document(complaint.getId())
-            .update(
-                "adminResponse", response,
-                "updatedAt", com.google.firebase.Timestamp.now()
-            )
-            .addOnSuccessListener(aVoid -> {
-                Toast.makeText(this, "تم إرسال الرد بنجاح", Toast.LENGTH_SHORT).show();
-                loadComplaints();
-            })
-            .addOnFailureListener(e -> 
-                Toast.makeText(this, "فشل في إرسال الرد", Toast.LENGTH_SHORT).show()
-            );
+                .document(complaint.getId())
+                .update(
+                        "adminResponse", response,
+                        "updatedAt", com.google.firebase.Timestamp.now()
+                )
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "تم إرسال الرد بنجاح", Toast.LENGTH_SHORT).show();
+                    loadComplaints();
+
+                    // Envoi de la notification à l'utilisateur concerné
+                    db.collection("users").document(complaint.getUserId())
+                            .get()
+                            .addOnSuccessListener(documentSnapshot -> {
+                                List<String> fcmTokens = (List<String>) documentSnapshot.get("fcmTokens");
+
+                                if (fcmTokens != null && !fcmTokens.isEmpty()) {
+                                    String title = "تم الرد على شكواك";
+                                    String message = "تمت معالجة شكواك. رد الإدارة: " + response;
+
+                                    for (String token : fcmTokens) {
+                                        NotificationUtils.sendNotification(token, title, message);
+                                    }
+
+                                    // Sauvegarder la notification dans Firestore
+                                    NotificationHelper.saveNotification(complaint.getUserId(), title, message);
+                                } else {
+                                    Log.w("ComplaintResponse", "Aucun token FCM trouvé pour l'utilisateur: " + complaint.getUserId());
+                                }
+                            })
+                            .addOnFailureListener(e ->
+                                    Log.e("ComplaintResponse", "Erreur lors de la récupération des tokens FCM", e)
+                            );
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(this, "فشل في إرسال الرد", Toast.LENGTH_SHORT).show()
+                );
     }
+
 
     private void deleteComplaint(Complaint complaint) {
         db.collection("complaints")

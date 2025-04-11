@@ -125,10 +125,10 @@ public class AdminActivity extends BaseActivity {
             } else if (id == R.id.menu_complaints) {
                 startActivity(new Intent(this, ManageComplaintsActivity.class));
                 finish();
-            }  else if (id == R.id.menu_verify_documents) {
+            } else if (id == R.id.menu_verify_documents) {
                 startActivity(new Intent(this, VerifyDocumentsActivity.class));
-                finish();}
-            else if (id == R.id.menu_profile) {
+                finish();
+            } else if (id == R.id.menu_profile) {
                 startActivity(new Intent(this, AdminProfileActivity.class));
                 finish();
             } else if (id == R.id.menu_logout) {
@@ -376,29 +376,29 @@ public class AdminActivity extends BaseActivity {
                                      List<String> imageUrls, List<String> videoUrls,
                                      ProgressDialog progressDialog) {
         News news = new News(title, description, imageUrls, videoUrls);
-        
+
         db.collection("news")
-            .add(news)
-            .addOnSuccessListener(documentReference -> {
-                progressDialog.dismiss();
-                Toast.makeText(AdminActivity.this, "تم نشر الخبر بنجاح", Toast.LENGTH_SHORT).show();
-                
-                // Envoyer une notification à tous les utilisateurs
-                NotificationUtils.sendNotificationToAllUsers(
-                    "خبر جديد",
-                    "تم نشر خبر جديد: " + title
-                );
-                
-                // Réinitialiser les champs
-                titleInput.setText("");
-                descriptionInput.setText("");
-                selectedImagesAdapter.clearImages();
-                selectedVideosAdapter.clearVideos();
-            })
-            .addOnFailureListener(e -> {
-                progressDialog.dismiss();
-                Toast.makeText(AdminActivity.this, "فشل في نشر الخبر", Toast.LENGTH_SHORT).show();
-            });
+                .add(news)
+                .addOnSuccessListener(documentReference -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(AdminActivity.this, "تم نشر الخبر بنجاح", Toast.LENGTH_SHORT).show();
+
+                    // Envoyer une notification à tous les utilisateurs
+                    NotificationUtils.sendNotificationToAllUsers(
+                            "خبر جديد",
+                            "تم نشر خبر جديد: " + title
+                    );
+
+                    // Réinitialiser les champs
+                    titleInput.setText("");
+                    descriptionInput.setText("");
+                    selectedImagesAdapter.clearImages();
+                    selectedVideosAdapter.clearVideos();
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(AdminActivity.this, "فشل في نشر الخبر", Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void clearForm() {
@@ -408,4 +408,5 @@ public class AdminActivity extends BaseActivity {
                 selectedImagesAdapter.removeImage(position));
         selectedImagesRecyclerView.setAdapter(selectedImagesAdapter);
     }
+
 }
