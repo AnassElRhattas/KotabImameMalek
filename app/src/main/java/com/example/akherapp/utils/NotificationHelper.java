@@ -3,6 +3,7 @@ package com.example.akherapp.utils;
 import android.app.Activity;
 import android.app.Dialog;
 import android.os.Build;
+import android.util.Log;
 import android.view.Window;
 
 import androidx.annotation.RequiresApi;
@@ -50,6 +51,7 @@ public class NotificationHelper {
                 queryDocumentSnapshots.forEach(document -> {
                     NotificationItem notification = document.toObject(NotificationItem.class);
                     notifications.add(notification);
+                    Log.d("NotifDebug", "Documents trouvés: " + queryDocumentSnapshots.size());
                 });
                 adapter.updateNotifications(notifications);
             });
@@ -96,7 +98,7 @@ public class NotificationHelper {
         Map<String, Object> notificationData = new HashMap<>();
         notificationData.put("userId", userId);
         notificationData.put("title", title);
-        notificationData.put("body", body);
+        notificationData.put("message", body);
         notificationData.put("timestamp", new Date());
 
         FirebaseFirestore.getInstance()

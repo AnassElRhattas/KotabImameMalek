@@ -1,9 +1,12 @@
 package com.example.akherapp.models;
 
+import com.google.firebase.firestore.PropertyName;
+
 import java.util.Date;
 
 public class NotificationItem {
     private String title;
+    @PropertyName("message")
     private String body;
     private Date timestamp;
 
@@ -24,11 +27,12 @@ public class NotificationItem {
     public void setTitle(String title) {
         this.title = title;
     }
-
+    @PropertyName("message")
     public String getBody() {
         return body;
     }
 
+    @PropertyName("message")
     public void setBody(String body) {
         this.body = body;
     }

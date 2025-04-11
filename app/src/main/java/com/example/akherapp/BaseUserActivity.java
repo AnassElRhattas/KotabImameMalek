@@ -12,6 +12,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import com.example.akherapp.utils.NotificationHelper;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.navigation.NavigationView;
@@ -39,12 +40,29 @@ public abstract class BaseUserActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_switch_account) {
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_switch_account) {
+            // Votre logique pour l'action de changement de compte
             showLinkedAccounts();
             return true;
+        } else if (itemId == R.id.action_notifications) {
+            // Récupérer l'ID de l'utilisateur depuis les SharedPreferences
+            SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+            String userId = prefs.getString("id", null);
+
+            // Vérifiez si l'ID de l'utilisateur existe
+            if (userId != null) {
+                // Si vous avez un objet 'user' existant, utilisez son ID.
+                NotificationHelper.showNotificationsDialog(this, userId);  // Utilisation de userId récupéré
+            }
+            return true;
         }
+
         return super.onOptionsItemSelected(item);
     }
+
+
 
     protected void showLinkedAccounts() {
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
@@ -126,4 +144,6 @@ public abstract class BaseUserActivity extends AppCompatActivity {
                 invalidateOptionsMenu(); // Mettre à jour le menu
             });
     }
+
+
 }
