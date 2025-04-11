@@ -379,28 +379,6 @@
                                 android:hint="الأسبوع 4"
                                 android:inputType="number"/>
                         </com.google.android.material.textfield.TextInputLayout>
-
-                        <!-- Add this inside the LinearLayout after other views -->
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/generateCertificateButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:textColor="@color/white"
-                            android:text="إنشاء الشهادة"
-                            app:icon="@drawable/ic_certificate"
-                            app:iconGravity="start"/>
-
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/viewCertificateButton"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="16dp"
-                            android:textColor="@color/white"
-                            android:text="عرض الشهادة"
-                            app:icon="@drawable/ic_oeil"
-                            app:iconGravity="start"/>
-
                         <com.google.android.material.button.MaterialButton
                             android:id="@+id/saveButton"
                             android:layout_width="match_parent"
@@ -411,6 +389,30 @@
                             android:padding="12dp"
                             app:icon="@drawable/ic_history"
                             app:cornerRadius="8dp"/>
+                        <!-- Add this inside the LinearLayout after other views -->
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/generateCertificateButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/purple_800"
+                            android:layout_marginTop="16dp"
+                            android:textColor="@color/white"
+                            android:text="إنشاء الشهادة"
+                            app:icon="@drawable/ic_certificate"
+                            app:iconGravity="start"/>
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/viewCertificateButton"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:backgroundTint="@color/purple_800"
+                            android:layout_marginTop="16dp"
+                            android:textColor="@color/white"
+                            android:text="عرض الشهادة"
+                            app:icon="@drawable/ic_oeil"
+                            app:iconGravity="start"/>
+
+
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/deleteUserButton"
                                 android:layout_width="match_parent"

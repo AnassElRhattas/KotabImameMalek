@@ -135,6 +135,8 @@ public class UserProfileActivity extends BaseUserActivity {
             } else if (id == R.id.menu_schedule) {
                 startActivity(new Intent(this, ViewScheduleActivity.class));
                 finish();
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_profile) {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.menu_submit_complaint) {

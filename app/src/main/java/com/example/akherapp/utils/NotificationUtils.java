@@ -7,13 +7,18 @@ import com.example.akherapp.R;
 import com.google.auth.oauth2.GoogleCredentials;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
+import com.google.firebase.messaging.RemoteMessage;
+
 import okhttp3.*;
 import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class NotificationUtils {
@@ -88,6 +93,7 @@ public class NotificationUtils {
                     String responseBody = response.body().string();
                     if (response.isSuccessful()) {
                         Log.d(TAG, "Notification envoyée avec succès. Réponse: " + responseBody);
+
                     } else {
                         Log.e(TAG, "Échec de l'envoi de la notification. Code: " + response.code() + ", Réponse: " + responseBody);
                     }
@@ -189,6 +195,31 @@ public class NotificationUtils {
         }
     }
 
+    public static void sendAdminNotification(String title, String message, String complaintId) {
+        // Get admin's FCM token from Firestore
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .whereEqualTo("role", "admin")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        String adminFcmToken = document.getString("fcmToken");
+                        if (adminFcmToken != null) {
+                            // Create notification payload
+                            Map<String, String> data = new HashMap<>();
+                            data.put("title", title);
+                            data.put("message", message);
+                            data.put("type", "complaint");
+                            data.put("complaintId", complaintId);
+
+                            // Send FCM notification
+                            FirebaseMessaging.getInstance().send(new RemoteMessage.Builder(adminFcmToken)
+                                    .setData(data)
+                                    .build());
+                        }
+                    }
+                });
+    }
     public static void updateUserFcmToken(String userId, String token) {
         FirebaseFirestore.getInstance()
             .collection("users")

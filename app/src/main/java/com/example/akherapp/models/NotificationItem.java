@@ -7,9 +7,9 @@ public class NotificationItem {
     private String body;
     private Date timestamp;
 
-    public NotificationItem() {
-        // Required empty constructor for Firestore
-    }
+
+    // Default constructor for Firestore
+    public NotificationItem() {}
 
     public NotificationItem(String title, String body, Date timestamp) {
         this.title = title;

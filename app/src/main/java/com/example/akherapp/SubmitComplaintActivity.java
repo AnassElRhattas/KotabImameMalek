@@ -1,15 +1,19 @@
 package com.example.akherapp;
 
 import static android.content.Context.MODE_PRIVATE;
+import static androidx.core.app.ActivityCompat.invalidateOptionsMenu;
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.akherapp.utils.NotificationUtils;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.widget.Toolbar;
@@ -31,8 +35,10 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +149,8 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                 finish();
             } else if (id == R.id.menu_documents) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
+            } else if (id == R.id.menu_voice_recognition) {
+                startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_schedule) {
                 startActivity(new Intent(this, ViewScheduleActivity.class));
                 finish();
@@ -219,13 +227,38 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                             db.collection("complaints")
                                     .add(complaint)
                                     .addOnSuccessListener(documentReference -> {
-                                        Toast.makeText(this, "تم إرسال الشكوى بنجاح", Toast.LENGTH_SHORT).show();
-                                        subjectInput.setText("");
-                                        descriptionInput.setText("");
-                                        loadUserComplaints();
+                                        NotificationUtils.sendAdminNotification(
+                                                "شكوى جديدة",
+                                                "تم استلام شكوى جديدة من " + userFullName,
+                                                documentReference.getId()
+                                        );
+                                        // Create notification for admin
+                                        Map<String, Object> notification = new HashMap<>();
+                                        notification.put("title", "شكوى جديدة");
+                                        notification.put("message", "تم استلام شكوى جديدة من " + user.getFirstName() + " " + user.getLastName());
+                                        notification.put("timestamp", new Date());
+                                        notification.put("type", "new_complaint");
+                                        notification.put("userId", "admin");
+                                        notification.put("studentId", userId);
+                                        notification.put("complaintId", documentReference.getId());
+
+
+                                        // Store notification in Firestore
+                                        db.collection("notifications")
+                                                .add(notification)
+                                                .addOnSuccessListener(notifRef -> {
+                                                    Log.d("SubmitComplaint", "Notification sent to admin");
+                                                    Toast.makeText(SubmitComplaintActivity.this,
+                                                            "تم إرسال الشكوى بنجاح", Toast.LENGTH_SHORT).show();
+                                                    finish();
+                                                })
+                                                .addOnFailureListener(e -> {
+                                                    Log.e("SubmitComplaint", "Error sending notification", e);
+                                                });
                                     })
                                     .addOnFailureListener(e -> {
-                                        Toast.makeText(this, "فشل في إرسال الشكوى", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(SubmitComplaintActivity.this,
+                                                "فشل في إرسال الشكوى", Toast.LENGTH_SHORT).show();
                                     })
                                     .addOnCompleteListener(task -> {
                                         progressBar.setVisibility(View.GONE);
@@ -299,6 +332,103 @@ public class SubmitComplaintActivity extends BaseUserActivity {
         }
     }
 
+    protected void checkLinkedAccounts() {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String currentUserId = prefs.getString("id", "");
+        String phone = prefs.getString("phone", "");
+
+        if (TextUtils.isEmpty(phone)) {
+            return;
+        }
+
+        db.collection("users")
+                .whereEqualTo("phone", phone)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    boolean foundLinkedAccounts = false;
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        if (!doc.getId().equals(currentUserId)) {
+                            foundLinkedAccounts = true;
+                            break;
+                        }
+                    }
+
+                    prefs.edit().putBoolean("has_linked_accounts", foundLinkedAccounts).apply();
+                    invalidateOptionsMenu(); // Mettre à jour le menu
+                });
+    }
+    @Override
+    protected void showLinkedAccounts() {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String currentUserId = prefs.getString("id", "");
+        String phone = prefs.getString("phone", "");
+
+        if (TextUtils.isEmpty(phone)) {
+            Toast.makeText(this, "خطأ في تحميل الحسابات المرتبطة", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        db.collection("users")
+                .whereEqualTo("phone", phone)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    View headerView = navigationView.getHeaderView(0);
+                    TextView linkedAccountsTitle = headerView.findViewById(R.id.linkedAccountsTitle);
+                    LinearLayout linkedAccountsContainer = headerView.findViewById(R.id.linkedAccountsContainer);
+
+                    linkedAccountsTitle.setVisibility(View.VISIBLE);
+                    linkedAccountsContainer.removeAllViews();
+
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        User user = document.toObject(User.class);
+                        String userId = document.getId();
+
+                        // Skip current account
+                        if (!userId.equals(currentUserId)) {
+                            View accountView = getLayoutInflater().inflate(R.layout.layout_linked_account, linkedAccountsContainer, false);
+
+                            TextView nameText = accountView.findViewById(R.id.linkedAccountName);
+                            MaterialButton switchButton = accountView.findViewById(R.id.btnSwitchAccount);
+                            ShapeableImageView profileImage = accountView.findViewById(R.id.linkedAccountImage);
+
+                            nameText.setText(user.getFirstName() + " " + user.getLastName());
+
+                            // Load profile image
+                            if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isEmpty()) {
+                                Glide.with(this)
+                                        .load(user.getProfileImageUrl())
+                                        .placeholder(R.drawable.default_profile_image)
+                                        .error(R.drawable.default_profile_image)
+                                        .circleCrop()
+                                        .into(profileImage);
+                            } else {
+                                profileImage.setImageResource(R.drawable.default_profile_image);
+                            }
+
+                            switchButton.setOnClickListener(v -> switchToAccount(userId));
+                            linkedAccountsContainer.addView(accountView);
+                        }
+                    }
+
+                    drawerLayout.openDrawer(GravityCompat.START);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("MainActivity", "Error loading linked accounts", e);
+                    Toast.makeText(this, "خطأ في تحميل الحسابات المرتبطة", Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    protected void switchToAccount(String userId) {
+        // Sauvegarder le nouvel ID utilisateur
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        prefs.edit().putString("id", userId).apply();
+
+        // Redémarrer l'activité
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+        finish();
+    }
     private void setupTutorial() {
         SharedPreferences prefs = getSharedPreferences("app_prefs", MODE_PRIVATE);
         boolean isFirstTime = prefs.getBoolean(PREF_FIRST_TIME_COMPLAINT, true);
@@ -369,6 +499,7 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                             // Do nothing
                         }
                     }).start();
+
         }
     }
 }
