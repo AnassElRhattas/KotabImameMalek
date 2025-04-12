@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.akherapp.utils.NotificationUtils;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -147,6 +148,10 @@ public class SubmitComplaintActivity extends BaseUserActivity {
             } else if (id == R.id.menu_progress) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
                 finish();
+            } else if (id == R.id.menu_payments) {
+                startActivity(new Intent(this, PaymentActivity.class));
+            } else if (id == R.id.menu_defi_user) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_documents) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
             } else if (id == R.id.menu_voice_recognition) {
@@ -182,6 +187,15 @@ public class SubmitComplaintActivity extends BaseUserActivity {
         complaintsRecyclerView.setAdapter(adapter);
     }
 
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("التسجيل غير متاح حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void setupSubmitButton() {
         submitButton.setOnClickListener(v -> {
             String subject = subjectInput.getText().toString().trim();
@@ -207,7 +221,7 @@ public class SubmitComplaintActivity extends BaseUserActivity {
         progressBar.setVisibility(View.VISIBLE);
         submitButton.setEnabled(false);
 
-        // D'abord, récupérer les informations de l'utilisateur
+        // Récupérer les informations de l'utilisateur
         db.collection("users").document(userId)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -216,51 +230,69 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                         if (user != null) {
                             String userFullName = user.getFirstName() + " " + user.getLastName();
 
-                            Map<String, Object> complaint = new HashMap<>();
-                            complaint.put("userId", userId);
-                            complaint.put("userFullName", userFullName);
-                            complaint.put("subject", subject);
-                            complaint.put("description", description);
-                            complaint.put("status", "pending");
-                            complaint.put("createdAt", Timestamp.now());
+                            // Récupérer le token de l'admin
+                            FirebaseFirestore.getInstance()
+                                    .collection("users")
+                                    .whereEqualTo("role", "admin")
+                                    .get()
+                                    .addOnSuccessListener(queryDocumentSnapshots -> {
+                                        for (DocumentSnapshot document : queryDocumentSnapshots) {
+                                            List<String> adminFcmTokens = (List<String>) document.get("fcmTokens");
 
-                            db.collection("complaints")
-                                    .add(complaint)
-                                    .addOnSuccessListener(documentReference -> {
-                                        NotificationUtils.sendAdminNotification(
-                                                "شكوى جديدة",
-                                                "تم استلام شكوى جديدة من " + userFullName,
-                                                documentReference.getId()
-                                        );
-                                        // Create notification for admin
-                                        Map<String, Object> notification = new HashMap<>();
-                                        notification.put("title", "شكوى جديدة");
-                                        notification.put("message", "تم استلام شكوى جديدة من " + user.getFirstName() + " " + user.getLastName());
-                                        notification.put("timestamp", new Date());
-                                        notification.put("type", "new_complaint");
-                                        notification.put("userId", "admin");
-                                        notification.put("studentId", userId);
-                                        notification.put("complaintId", documentReference.getId());
+                                            Map<String, Object> complaint = new HashMap<>();
+                                            complaint.put("userId", userId);
+                                            complaint.put("userFullName", userFullName);
+                                            complaint.put("subject", subject);
+                                            complaint.put("description", description);
+                                            complaint.put("status", "pending");
+                                            complaint.put("createdAt", Timestamp.now());
 
+                                            db.collection("complaints")
+                                                    .add(complaint)
+                                                    .addOnSuccessListener(documentReference -> {
 
-                                        // Store notification in Firestore
-                                        db.collection("notifications")
-                                                .add(notification)
-                                                .addOnSuccessListener(notifRef -> {
-                                                    Log.d("SubmitComplaint", "Notification sent to admin");
-                                                    Toast.makeText(SubmitComplaintActivity.this,
-                                                            "تم إرسال الشكوى بنجاح", Toast.LENGTH_SHORT).show();
-                                                    finish();
-                                                })
-                                                .addOnFailureListener(e -> {
-                                                    Log.e("SubmitComplaint", "Error sending notification", e);
-                                                });
+                                                        if (adminFcmTokens != null) {
+                                                            for (String token : adminFcmTokens) {
+                                                                NotificationUtils.sendNotificationToAdminComplaint(token, userFullName);
+                                                            }
+                                                        }
+
+                                                        // Créer une notification Firestore pour l'admin
+                                                        Map<String, Object> notification = new HashMap<>();
+                                                        notification.put("title", "شكوى جديدة");
+                                                        notification.put("message", "تم استلام شكوى جديدة من " + userFullName);
+                                                        notification.put("timestamp", new Date());
+                                                        notification.put("type", "new_complaint");
+                                                        notification.put("userId", "admin");
+                                                        notification.put("studentId", userId);
+                                                        notification.put("complaintId", documentReference.getId());
+
+                                                        db.collection("notifications")
+                                                                .add(notification)
+                                                                .addOnSuccessListener(notifRef -> {
+                                                                    Log.d("SubmitComplaint", "Notification sent to admin");
+                                                                    Toast.makeText(SubmitComplaintActivity.this,
+                                                                            "تم إرسال الشكوى بنجاح", Toast.LENGTH_SHORT).show();
+                                                                    finish();
+                                                                })
+                                                                .addOnFailureListener(e -> {
+                                                                    Log.e("SubmitComplaint", "Error sending notification", e);
+                                                                });
+                                                    })
+                                                    .addOnFailureListener(e -> {
+                                                        Toast.makeText(SubmitComplaintActivity.this,
+                                                                "فشل في إرسال الشكوى", Toast.LENGTH_SHORT).show();
+                                                    })
+                                                    .addOnCompleteListener(task -> {
+                                                        progressBar.setVisibility(View.GONE);
+                                                        submitButton.setEnabled(true);
+                                                    });
+
+                                            break; // Arrêter après le premier admin trouvé
+                                        }
                                     })
                                     .addOnFailureListener(e -> {
-                                        Toast.makeText(SubmitComplaintActivity.this,
-                                                "فشل في إرسال الشكوى", Toast.LENGTH_SHORT).show();
-                                    })
-                                    .addOnCompleteListener(task -> {
+                                        Toast.makeText(this, "فشل في تحميل بيانات المشرف", Toast.LENGTH_SHORT).show();
                                         progressBar.setVisibility(View.GONE);
                                         submitButton.setEnabled(true);
                                     });
@@ -273,6 +305,7 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                     submitButton.setEnabled(true);
                 });
     }
+
 
     private void loadUserComplaints() {
         if (userId == null) {

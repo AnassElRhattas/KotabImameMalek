@@ -16,6 +16,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -111,6 +112,10 @@ public class ViewScheduleActivity extends BaseUserActivity {
                 drawerLayout.closeDrawer(GravityCompat.START);
             } else if (id == R.id.menu_voice_recognition) {
                 startActivity(new Intent(this, VoiceRecognitionActivity.class));
+            } else if (id == R.id.menu_payments) {
+                startActivity(new Intent(this, PaymentActivity.class));
+            } else if (id == R.id.menu_defi_user) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_documents) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
             } else if (id == R.id.menu_documents) {
@@ -171,6 +176,15 @@ public class ViewScheduleActivity extends BaseUserActivity {
         }
     }
 
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("التسجيل غير متاح حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void loadSchedule() {
         StorageReference scheduleRef = storage.getReference().child("schedules").child("schedule_latest");
         scheduleRef.getMetadata().addOnSuccessListener(metadata -> {

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -139,6 +140,8 @@ public class ScheduleManagementActivity extends BaseActivity {
                 finish();
             } else if (id == R.id.menu_schedule) {
                 drawerLayout.closeDrawer(GravityCompat.START);
+            } else if (id == R.id.menu_defi) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_users) {
                 startActivity(new Intent(this, UsersListActivity.class));
                 finish();
@@ -217,6 +220,16 @@ public class ScheduleManagementActivity extends BaseActivity {
         }
     }
 
+
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void setupFilePicker() {
         filePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.GetContent(),

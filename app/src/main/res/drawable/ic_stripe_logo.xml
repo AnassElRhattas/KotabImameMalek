@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="60dp"
+    android:height="40dp"
+    android:viewportWidth="60"
+    android:viewportHeight="40">
+
+    <!-- Background -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M0,0h60v40h-60z"/>
+
+    <!-- Letters CIH -->
+    <path
+        android:fillColor="#004B8D"
+        android:pathData="M10,10h40v20h-40z"/>
+    
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M15,15 L20,15 L20,25 L15,25 Z"/>
+    
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M23,15 L28,15 L28,25 L23,25 Z"/>
+    
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M31,15 L36,15 L36,25 L31,25 Z"/>
+
+    <!-- Bank text -->
+    <path
+        android:fillColor="#004B8D"
+        android:pathData="M15,28h30v4h-30z"/>
+</vector>

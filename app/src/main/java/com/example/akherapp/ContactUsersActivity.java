@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -169,6 +170,8 @@ public class ContactUsersActivity extends BaseActivity implements NavigationView
             intent = new Intent(this, ScheduleManagementActivity.class);
         } else if (id == R.id.menu_users) {
             intent = new Intent(this, UsersListActivity.class);
+        } else if (id == R.id.menu_defi) {
+            showDevelopmentDialogRamadan();
         } else if (id == R.id.menu_verify_documents) {
             startActivity(new Intent(this, VerifyDocumentsActivity.class));
             finish();
@@ -195,6 +198,15 @@ public class ContactUsersActivity extends BaseActivity implements NavigationView
         return true;
     }
 
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

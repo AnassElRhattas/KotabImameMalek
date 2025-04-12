@@ -143,10 +143,20 @@ public class VoiceRecognitionActivity extends BaseUserActivity {
     }
 
 
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("التسجيل غير متاح حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void showDevelopmentDialog() {
-        new AlertDialog.Builder(this)
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
                 .setTitle("تنبيه")
                 .setMessage("هذه الميزة قيد التطوير حاليا")
+                .setIcon(R.drawable.ic_warning)
                 .setPositiveButton("موافق", (dialog, which) -> {
                     dialog.dismiss();
                     // Continue with normal activity flow
@@ -183,6 +193,10 @@ public class VoiceRecognitionActivity extends BaseUserActivity {
                 startActivity(new Intent(this, ViewScheduleActivity.class));
             } else if (id == R.id.menu_profile) {
                 startActivity(new Intent(this, UserProfileActivity.class));
+            } else if (id == R.id.menu_payments) {
+                startActivity(new Intent(this, PaymentActivity.class));
+            } else if (id == R.id.menu_defi_user) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_progress) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
             } else if (id == R.id.menu_documents) {

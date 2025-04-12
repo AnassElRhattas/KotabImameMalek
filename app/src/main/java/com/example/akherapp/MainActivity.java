@@ -55,10 +55,15 @@ public class MainActivity extends BaseUserActivity {
     // Constante pour l'action de notification
     public static final String NOTIFICATION_RECEIVED = "com.example.akherapp.NOTIFICATION_RECEIVED";
 
+    private static final String FIRST_TIME_KEY = "is_first_time";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        
+        // Vérifier si c'est la première fois
+        checkFirstTimeUser();
         db = FirebaseFirestore.getInstance();
 
         // Initialisation des vues
@@ -219,6 +224,12 @@ public class MainActivity extends BaseUserActivity {
                 startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_documents && !isAdmin) {
                 startActivity(new Intent(this, DocumentUploadActivity.class));
+            } else if (id == R.id.menu_payments && !isAdmin) {
+                startActivity(new Intent(this, PaymentActivity.class));
+            } else if (id == R.id.menu_defi && isAdmin) {
+                showDevelopmentDialogRamadan();
+            } else if (id == R.id.menu_defi_user && !isAdmin) {
+                showDevelopmentDialog();
             } else if (id == R.id.menu_complaints && isAdmin) {
                 startActivity(new Intent(this, ManageComplaintsActivity.class));
             } else if (id == R.id.menu_progress && !isAdmin) {
@@ -249,6 +260,15 @@ public class MainActivity extends BaseUserActivity {
         });
     }
 
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void setupNotificationReceiver() {
         Log.d("MainActivity", "Configuration du receiver de notifications");
         // Initialiser le receiver pour les notifications en premier plan
@@ -438,6 +458,17 @@ public class MainActivity extends BaseUserActivity {
         return true;
     }
 
+    private void showDevelopmentDialog() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("التسجيل غير متاح حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
+
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_switch_account) {
@@ -481,6 +512,31 @@ public class MainActivity extends BaseUserActivity {
             LocalBroadcastManager.getInstance(this)
                     .unregisterReceiver(notificationReceiver);
         }
+    }
+
+    private void checkFirstTimeUser() {
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        boolean isFirstTime = prefs.getBoolean(FIRST_TIME_KEY, true);
+
+        if (isFirstTime) {
+            showWelcomeDialog();
+            // Marquer que ce n'est plus la première fois
+            prefs.edit().putBoolean(FIRST_TIME_KEY, false).apply();
+        }
+    }
+
+    private void showWelcomeDialog() {
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_welcome, null);
+
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setView(dialogView)
+                .setCancelable(false)
+                .create();
+
+        MaterialButton btnContinue = dialogView.findViewById(R.id.btnContinue);
+        btnContinue.setOnClickListener(v -> dialog.dismiss());
+
+        dialog.show();
     }
 
     @Override

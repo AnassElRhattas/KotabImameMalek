@@ -30,19 +30,26 @@
             android:icon="@drawable/ic_complaints"
             android:title="تقديم شكوى"
             app:iconTint="@color/colorPrimary" />
-    </group>
-    <group>
-
         <item
             android:id="@+id/menu_voice_recognition"
             android:icon="@drawable/ic_mic"
-            android:title="تدريب النطق"
+            android:title="تعليم النطق"
             app:iconTint="@color/colorPrimary" />
+
+    </group>
+    <group>
         <item
             android:id="@+id/menu_defi_user"
             android:icon="@drawable/ic_quran_competition"
             android:title="إدارة المسابقات"
             app:iconTint="@color/colorAccent2" />
+    </group>
+
+    <group android:id="@+id/group_payments">
+        <item
+            android:id="@+id/menu_payments"
+            android:icon="@drawable/ic_payment"
+            android:title="المدفوعات"/>
     </group>
     <group android:id="@+id/secondary_group"
         android:checkableBehavior="none">
@@ -57,4 +64,5 @@
             android:title="تسجيل الخروج"
             app:iconTint="#FF5252" />
     </group>
+
 </menu>

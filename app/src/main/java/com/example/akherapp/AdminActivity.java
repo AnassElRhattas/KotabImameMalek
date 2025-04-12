@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -125,6 +126,8 @@ public class AdminActivity extends BaseActivity {
             } else if (id == R.id.menu_complaints) {
                 startActivity(new Intent(this, ManageComplaintsActivity.class));
                 finish();
+            } else if (id == R.id.menu_complaints) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_verify_documents) {
                 startActivity(new Intent(this, VerifyDocumentsActivity.class));
                 finish();
@@ -193,6 +196,16 @@ public class AdminActivity extends BaseActivity {
                                 Toast.LENGTH_SHORT).show();
                     });
         }
+    }
+
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
     }
 
     @Override

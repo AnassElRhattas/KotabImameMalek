@@ -109,6 +109,8 @@ public class ManageComplaintsActivity extends AppCompatActivity implements Compl
             } else if (id == R.id.menu_users) {
                 startActivity(new Intent(this, UsersListActivity.class));
                 finish();
+            } else if (id == R.id.menu_defi) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_contact_users) {
                 startActivity(new Intent(this, ContactUsersActivity.class));
                 finish();
@@ -172,6 +174,15 @@ public class ManageComplaintsActivity extends AppCompatActivity implements Compl
         }
     }
 
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void loadComplaints() {
         swipeRefreshLayout.setRefreshing(true);
         db.collection("complaints")

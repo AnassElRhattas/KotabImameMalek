@@ -16,6 +16,7 @@ import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -116,6 +117,8 @@ public class VerifyDocumentsActivity extends BaseActivity implements UserDocumen
                 startActivity(new Intent(this, ContactUsersActivity.class));
             } else if (id == R.id.menu_schedule) {
                 startActivity(new Intent(this, ScheduleManagementActivity.class));
+            } else if (id == R.id.menu_defi) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_complaints) {
                 startActivity(new Intent(this, ManageComplaintsActivity.class));
                 finish();
@@ -211,6 +214,16 @@ public class VerifyDocumentsActivity extends BaseActivity implements UserDocumen
             });
     }
 
+
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void updateEmptyView() {
         if (users.isEmpty()) {
             emptyView.setVisibility(View.VISIBLE);

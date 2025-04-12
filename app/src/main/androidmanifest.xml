@@ -138,6 +138,11 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <activity
+            android:name=".PaymentActivity"
+            android:label="المدفوعات الشهرية"
+            android:exported="false"/>
+
     <provider
         android:name="androidx.core.content.FileProvider"
         android:authorities="com.example.akherapp.fileprovider"

@@ -208,9 +208,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="16dp"
+            android:enabled="false"
+            android:backgroundTint="@color/purple_800"
+            android:rotationX="0"
             android:text="إرسال"
-            android:textColor="@color/white"
-            android:enabled="false"/>
+            android:textColor="@color/white" />
     </LinearLayout>
 
     <!-- Menu latéral -->

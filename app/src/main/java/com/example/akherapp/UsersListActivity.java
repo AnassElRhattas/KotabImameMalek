@@ -19,6 +19,7 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
@@ -160,6 +161,8 @@ public class UsersListActivity extends BaseActivity {
                 finish();
             } else if (id == R.id.menu_contact_users) {
                 startActivity(new Intent(this, ContactUsersActivity.class));
+            } else if (id == R.id.menu_defi) {
+                showDevelopmentDialogRamadan();
             } else if (id == R.id.menu_schedule) {
                 startActivity(new Intent(this, ScheduleManagementActivity.class));
             } else if (id == R.id.menu_verify_documents) {
@@ -241,6 +244,16 @@ public class UsersListActivity extends BaseActivity {
         }
     }
 
+
+    private void showDevelopmentDialogRamadan() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("إدارة المسابقة غير متاحة حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     private void setupRecyclerView() {
         usersListAdapter = new UsersListAdapter(new ArrayList<>());
         usersRecyclerView.setLayoutManager(new LinearLayoutManager(this));

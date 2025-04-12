@@ -5,12 +5,15 @@ import static android.content.Context.MODE_PRIVATE;
 import static androidx.activity.result.ActivityResultCallerKt.registerForActivityResult;
 import static androidx.appcompat.content.res.AppCompatResources.getDrawable;
 import static androidx.core.app.ActivityCompat.invalidateOptionsMenu;
+import static androidx.core.app.NotificationCompat.getColor;
 import static androidx.core.content.ContextCompat.startActivity;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -21,6 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -37,6 +41,7 @@ import java.util.HashMap;
 import java.util.Map;
 import androidx.appcompat.widget.Toolbar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
@@ -124,9 +129,13 @@ public class DocumentUploadActivity extends BaseUserActivity {
 
         if (url != null && !url.isEmpty()) {
             button.setText("تغيير الملف");
+            button.setTextColor(R.color.purple_800);
             // Fix the getDrawable call
             button.setIcon(getDrawable(R.drawable.ic_document));
             button.setIconGravity(MaterialButton.ICON_GRAVITY_START);
+            button.setIconTint(ColorStateList.valueOf(ContextCompat.getColor(this, R.color.purple_800)));
+
+
 
             // Rest of the method remains the same
             boolean isVerified = documents.get(docType + "_verified") != null && 
@@ -230,9 +239,13 @@ public class DocumentUploadActivity extends BaseUserActivity {
                 startActivity(new Intent(this, VoiceRecognitionActivity.class));
             } else if (id == R.id.menu_schedule) {
                 startActivity(new Intent(this, ViewScheduleActivity.class));
+            } else if (id == R.id.menu_payments) {
+                startActivity(new Intent(this, PaymentActivity.class));
             } else if (id == R.id.menu_profile) {
                 startActivity(new Intent(this, UserProfileActivity.class));
                 finish();
+            } else if (id == R.id.menu_defi_user ) {
+                showDevelopmentDialog();
             } else if (id == R.id.menu_progress) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
                 finish();
@@ -291,6 +304,15 @@ public class DocumentUploadActivity extends BaseUserActivity {
         }
     }
 
+    private void showDevelopmentDialog() {
+        new AlertDialog.Builder(this, R.style.MyAlertDialogTheme)
+                .setTitle("إعلام")
+                .setMessage("التسجيل غير متاح حاليا حتى موسم رمضان")
+                .setIcon(R.drawable.ic_info)
+                .setPositiveButton("موافق", (dialog, which) -> dialog.dismiss())
+                .setCancelable(false)
+                .show();
+    }
     @Override
     public void onBackPressed() {
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {

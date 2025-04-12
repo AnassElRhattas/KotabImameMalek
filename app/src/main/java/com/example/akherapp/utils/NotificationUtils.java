@@ -95,7 +95,69 @@ public class NotificationUtils {
                         Log.d(TAG, "Notification envoyée avec succès. Réponse: " + responseBody);
 
                     } else {
+                        if (response.code() == 400 || response.code() == 404) {
+                            // Erreur de token invalide, supprimer le token de Firestore
+                            Log.e(TAG, "Token invalide. Suppression du token...");
+                            removeInvalidToken(adminToken);
+                        } else {
+                            Log.e(TAG, "Échec de l'envoi de la notification. Code: " + response.code() + ", Réponse: " + responseBody);
+                        }
+                    }
+                    response.close();
+                } catch (IOException e) {
+                    Log.e(TAG, "Erreur lors de l'envoi de la notification", e);
+                }
+            }).start();
+
+        } catch (Exception e) {
+            Log.e(TAG, "Erreur lors de la préparation de la notification", e);
+        }
+    }
+
+    public static void sendNotificationToAdminComplaint(String adminToken, String userName) {
+        try {
+            Log.d(TAG, "Préparation de la notification pour l'admin");
+            JSONObject message = new JSONObject();
+            JSONObject notification = new JSONObject();
+            notification.put("title", "شكوى جديدة");
+            notification.put("body", "تم استلام شكوى جديدة من " + userName);
+
+            message.put("message", new JSONObject()
+                    .put("token", adminToken)
+                    .put("notification", notification));
+
+            Log.d(TAG, "Corps de la notification: " + message.toString());
+
+            RequestBody requestBody = RequestBody.create(
+                    MediaType.parse("application/json; charset=utf-8"),
+                    message.toString());
+
+            // Exécuter dans un thread en arrière-plan
+            new Thread(() -> {
+                try {
+                    String accessToken = getAccessToken();
+                    Request request = new Request.Builder()
+                            .url(FCM_URL)
+                            .post(requestBody)
+                            .addHeader("Authorization", "Bearer " + accessToken)
+                            .addHeader("Content-Type", "application/json")
+                            .build();
+
+                    Log.d(TAG, "Envoi de la requête FCM à: " + FCM_URL);
+
+                    Response response = client.newCall(request).execute();
+                    String responseBody = response.body().string();
+                    if (response.isSuccessful()) {
+                        Log.d(TAG, "Notification envoyée avec succès. Réponse: " + responseBody);
+
+                    } else {
+                        if (response.code() == 400 || response.code() == 404) {
+                            // Erreur de token invalide, supprimer le token de Firestore
+                            Log.e(TAG, "Token invalide. Suppression du token...");
+                            removeInvalidToken(adminToken);
+                        } else {
                         Log.e(TAG, "Échec de l'envoi de la notification. Code: " + response.code() + ", Réponse: " + responseBody);
+                    }
                     }
                     response.close();
                 } catch (IOException e) {
@@ -140,29 +202,35 @@ public class NotificationUtils {
             notification.put("body", message);
 
             notificationMessage.put("message", new JSONObject()
-                .put("token", token)
-                .put("notification", notification));
+                    .put("token", token)
+                    .put("notification", notification));
 
             RequestBody requestBody = RequestBody.create(
-                MediaType.parse("application/json; charset=utf-8"),
-                notificationMessage.toString());
+                    MediaType.parse("application/json; charset=utf-8"),
+                    notificationMessage.toString());
 
             new Thread(() -> {
                 try {
                     String accessToken = getAccessToken();
                     Request request = new Request.Builder()
-                        .url(FCM_URL)
-                        .post(requestBody)
-                        .addHeader("Authorization", "Bearer " + accessToken)
-                        .addHeader("Content-Type", "application/json")
-                        .build();
+                            .url(FCM_URL)
+                            .post(requestBody)
+                            .addHeader("Authorization", "Bearer " + accessToken)
+                            .addHeader("Content-Type", "application/json")
+                            .build();
 
                     Response response = client.newCall(request).execute();
                     String responseBody = response.body().string();
                     if (response.isSuccessful()) {
                         Log.d(TAG, "Notification envoyée avec succès. Réponse: " + responseBody);
                     } else {
-                        Log.e(TAG, "Échec de l'envoi de la notification. Code: " + response.code() + ", Réponse: " + responseBody);
+                        if (response.code() == 400 || response.code() == 404) {
+                            // Erreur de token invalide, supprimer le token de Firestore
+                            Log.e(TAG, "Token invalide. Suppression du token...");
+                            removeInvalidToken(token);
+                        } else {
+                            Log.e(TAG, "Échec de l'envoi de la notification. Code: " + response.code() + ", Réponse: " + responseBody);
+                        }
                     }
                     response.close();
                 } catch (IOException e) {
@@ -174,6 +242,29 @@ public class NotificationUtils {
             Log.e(TAG, "Erreur lors de la préparation de la notification", e);
         }
     }
+
+    private static void removeInvalidToken(String token) {
+        // Récupérer l'utilisateur concerné et retirer le token
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .whereArrayContains("fcmTokens", token)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        DocumentSnapshot document = queryDocumentSnapshots.getDocuments().get(0);
+                        List<String> fcmTokens = (List<String>) document.get("fcmTokens");
+                        if (fcmTokens != null && fcmTokens.contains(token)) {
+                            fcmTokens.remove(token);
+                            db.collection("users").document(document.getId())
+                                    .update("fcmTokens", fcmTokens)
+                                    .addOnSuccessListener(aVoid -> Log.d(TAG, "Token invalide supprimé de la base"))
+                                    .addOnFailureListener(e -> Log.e(TAG, "Erreur lors de la suppression du token", e));
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> Log.e(TAG, "Erreur lors de la récupération de l'utilisateur", e));
+    }
+
 
     private static String getAccessToken() throws IOException {
         Log.d(TAG, "Récupération du token d'accès");
