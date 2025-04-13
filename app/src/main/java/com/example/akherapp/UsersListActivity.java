@@ -66,6 +66,7 @@ public class UsersListActivity extends BaseActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private TextInputEditText searchInput;
+    private TextView userCountText;
 
     // Supprimer l'import de RadioGroup
     // import android.widget.RadioGroup;
@@ -113,6 +114,7 @@ public class UsersListActivity extends BaseActivity {
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         searchInput = findViewById(R.id.searchInput);
+        userCountText = findViewById(R.id.userCountText);
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar,
@@ -323,6 +325,7 @@ public class UsersListActivity extends BaseActivity {
                         User user = document.toObject(User.class);
                         if (user != null) {
                             allUsers.add(user);
+                            updateUserCount(allUsers.size());
                             if (user.getTeacher() != null && !teachers.contains(user.getTeacher())) {
                                 teachers.add(user.getTeacher());
                             }
@@ -341,6 +344,10 @@ public class UsersListActivity extends BaseActivity {
                     Toast.makeText(UsersListActivity.this, "Error loading users: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     progressBar.setVisibility(View.GONE);
                 });
+    }
+    private void updateUserCount(int count) {
+        String countText = String.format("عدد الطلبة: %d", count);
+        userCountText.setText(countText);
     }
 
     private void sortUsersByName() {

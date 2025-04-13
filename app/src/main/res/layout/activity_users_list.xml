@@ -27,6 +27,7 @@
                 android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"/>
         </com.google.android.material.appbar.AppBarLayout>
 
+
         <!-- Add this button after AppBarLayout -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/generateAllCertificatesButton"
@@ -110,7 +111,16 @@
                         android:text="المعلم"
                         app:chipBackgroundColor="@color/chip_background_color"
                         style="@style/Widget.MaterialComponents.Chip.Choice"/>
+
                 </com.google.android.material.chip.ChipGroup>
+                <TextView
+                    android:id="@+id/userCountText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"
+                    android:textSize="16sp"
+                    android:textColor="@color/purple_800"
+                    android:textStyle="bold"/>
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:layout_width="match_parent"
