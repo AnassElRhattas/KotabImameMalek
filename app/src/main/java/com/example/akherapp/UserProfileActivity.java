@@ -315,7 +315,7 @@ public class UserProfileActivity extends BaseUserActivity {
                             userNameText.setText(fullName);
                             userPhoneText.setText(currentUser.getPhone());
                             String fatherFullName = currentUser.getFatherFirstName() + " " + currentUser.getFatherLastName();
-                            userFatherNameText.setText("ولي الأمر: " + fatherFullName);
+                            userFatherNameText.setText(android.text.Html.fromHtml("<b>ولي الأمر</b> : " + fatherFullName));
 
                             editFirstName.setText(currentUser.getFirstName());
                             editLastName.setText(currentUser.getLastName());

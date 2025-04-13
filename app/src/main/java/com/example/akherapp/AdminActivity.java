@@ -388,7 +388,7 @@ public class AdminActivity extends BaseActivity {
     private void saveNewsToFirestore(String title, String description,
                                      List<String> imageUrls, List<String> videoUrls,
                                      ProgressDialog progressDialog) {
-        News news = new News(title, description, imageUrls, videoUrls);
+        News news = new News(title, description, imageUrls);
 
         db.collection("news")
                 .add(news)

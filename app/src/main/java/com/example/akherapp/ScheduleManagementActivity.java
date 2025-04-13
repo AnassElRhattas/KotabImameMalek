@@ -27,6 +27,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 import com.example.akherapp.adapters.ScheduleUpdateAdapter;
 import com.example.akherapp.models.ScheduleUpdate;
+import com.example.akherapp.utils.NotificationUtils;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -283,6 +284,12 @@ public class ScheduleManagementActivity extends BaseActivity {
                             Toast.makeText(ScheduleManagementActivity.this,
                                 "تم تحميل الجدول بنجاح",
                                 Toast.LENGTH_SHORT).show();
+
+                            // Envoyer une notification à tous les utilisateurs
+                            NotificationUtils.sendNotificationToAllUsers(
+                                    "استعمال الزمان",
+                                    "استعمال الزمان متوفر الآن"
+                            );
                             
                             // Add this line
                             updateStatistics(uri.toString());

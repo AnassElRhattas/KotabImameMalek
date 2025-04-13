@@ -1,6 +1,7 @@
 package com.example.akherapp;
 
 import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,8 @@ import com.bumptech.glide.Glide;
 import com.example.akherapp.utils.DateUtils;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+
 import android.content.Context;
 import de.hdodenhof.circleimageview.CircleImageView;
 import java.util.ArrayList;
@@ -106,18 +109,42 @@ public class UsersListAdapter extends RecyclerView.Adapter<UsersListAdapter.User
     }
 
     private void deleteUser(User user, int position) {
+
+        // Récupérer d'abord l'URL de la photo depuis Firestore
         db.collection("users").document(user.getId())
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    users.remove(user);
-                    usersFiltered.remove(user);
-                    notifyItemRemoved(position);
-                    notifyItemRangeChanged(position, usersFiltered.size());
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String photoUrl = documentSnapshot.getString("profileImageUrl"); // Assure-toi que le champ s'appelle bien "photoUrl"
+
+                        // Supprimer la photo de profil du Storage si elle existe
+                        if (photoUrl != null && !photoUrl.isEmpty()) {
+                            FirebaseStorage.getInstance().getReferenceFromUrl(photoUrl)
+                                    .delete()
+                                    .addOnSuccessListener(aVoid -> Log.d("UserAdapter", "Photo supprimée"))
+                                    .addOnFailureListener(e -> Log.e("UserAdapter", "Erreur lors de la suppression de la photo", e));
+                        }
+
+                        // Supprimer le document utilisateur ensuite
+                        db.collection("users").document(user.getId())
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    users.remove(user);
+                                    usersFiltered.remove(user);
+                                    notifyItemRemoved(position);
+                                    notifyItemRangeChanged(position, usersFiltered.size());
+                                    Toast.makeText(context, "تم حذف المستخدم", Toast.LENGTH_SHORT).show();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(context, "فشل في حذف المستخدم", Toast.LENGTH_SHORT).show();
+                                });
+                    } else {
+                        Log.w("UserAdapter", "Document utilisateur introuvable");
+                    }
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(context, "فشل في حذف المستخدم", Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e -> Log.e("UserAdapter", "Erreur lors de la récupération de l'utilisateur", e));
     }
+
 
     @Override
     public int getItemCount() {

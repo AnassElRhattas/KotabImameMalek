@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@color/white"
     android:padding="16dp">
 
     <TextView
@@ -13,6 +14,7 @@
         android:textAlignment="center"
         android:textSize="18sp"
         android:textStyle="bold"
+        android:textColor="@color/black"
         android:layout_marginBottom="16dp" />
 
     <com.google.android.material.card.MaterialCardView
@@ -26,20 +28,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="8dp">
+            android:background="@color/white"
+            android:padding="8dp"
+            android:gravity="center_vertical"
+            android:layoutDirection="rtl"> <!-- Pour inverser l'ordre -->
 
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/existingUserImage"
-                android:layout_width="60dp"
-                android:layout_height="60dp"
-                android:scaleType="centerCrop"
-                app:shapeAppearanceOverlay="@style/circleImageView" />
-
+            <!-- Le nom maintenant à gauche (visuellement) -->
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:orientation="vertical">
 
                 <TextView
@@ -51,8 +50,18 @@
                     android:textStyle="bold" />
 
             </LinearLayout>
+
+            <!-- L'image à droite -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/existingUserImage"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/circleImageView" />
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+
 
     <LinearLayout
         android:layout_width="match_parent"

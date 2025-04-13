@@ -4,10 +4,14 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ScrollView;
@@ -164,14 +168,20 @@ public class SignupActivity extends AppCompatActivity {
         MaterialButton btnCancel = dialog.findViewById(R.id.btnCancel);
 
         existingUserName.setText(existingUser.getFirstName() + " " + existingUser.getLastName());
-        
-        if (existingUser.getProfileImageUrl() != null && !existingUser.getProfileImageUrl().isEmpty()) {
+
+        String imageUrl = existingUser.getProfileImageUrl();
+
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             Glide.with(this)
-                    .load(existingUser.getProfileImageUrl())
+                    .load(imageUrl)
                     .placeholder(R.drawable.default_profile_image)
                     .error(R.drawable.default_profile_image)
                     .into(existingUserImage);
+        } else {
+            // Pas d'image => utiliser manuellement celle par défaut
+            existingUserImage.setImageResource(R.drawable.default_profile_image);
         }
+
 
         btnLogin.setOnClickListener(v -> {
             dialog.dismiss();
@@ -185,7 +195,13 @@ public class SignupActivity extends AppCompatActivity {
 
         btnCancel.setOnClickListener(v -> dialog.dismiss());
 
+
         dialog.show();
+        dialog.getWindow().setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
     }
 
     private void validateAndSignup() {
@@ -253,12 +269,17 @@ public class SignupActivity extends AppCompatActivity {
 
         existingUserName.setText(existingUser.getFirstName() + " " + existingUser.getLastName());
         existingUserPhone.setText(existingUser.getPhone());
-        if (existingUser.getProfileImageUrl() != null && !existingUser.getProfileImageUrl().isEmpty()) {
+        String imageUrl = existingUser.getProfileImageUrl();
+
+        if (imageUrl != null && !imageUrl.trim().isEmpty()) {
             Glide.with(this)
-                    .load(existingUser.getProfileImageUrl())
+                    .load(imageUrl)
                     .placeholder(R.drawable.default_profile_image)
                     .error(R.drawable.default_profile_image)
                     .into(existingUserImage);
+        } else {
+            // Pas d'image => utiliser manuellement celle par défaut
+            existingUserImage.setImageResource(R.drawable.default_profile_image);
         }
 
         btnAccessExistingAccount.setOnClickListener(v -> {
@@ -281,6 +302,11 @@ public class SignupActivity extends AppCompatActivity {
         });
 
         dialog.show();
+        dialog.getWindow().setLayout(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.WRAP_CONTENT
+        );
+
     }
 
     private void proceedWithSignup(String firstName, String lastName, String phone, String password) {
@@ -289,10 +315,21 @@ public class SignupActivity extends AppCompatActivity {
             return;
         }
 
-        // Afficher un dialogue de progression
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("جاري إنشاء الحساب...");
         progressDialog.show();
+
+// Après show(), on peut accéder aux vues internes
+        Window window = progressDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.WHITE)); // Fond blanc
+        }
+
+        TextView messageText = progressDialog.findViewById(android.R.id.message);
+        if (messageText != null) {
+            messageText.setTextColor(Color.BLACK); // Texte en noir
+        }
+
 
         // Obtenir une référence à Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();

@@ -15,9 +15,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Existing image ViewPager -->
         <FrameLayout
-            android:id="@+id/imageContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -40,15 +38,6 @@
                 android:background="@drawable/tab_indicator_background"
                 android:paddingHorizontal="8dp"/>
         </FrameLayout>
-
-        <!-- New Video Container -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/videoRecyclerView"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,13 +70,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginBottom="8dp">
+                android:layout_marginBottom="8dp"
+                >
 
                 <TextView
                     android:id="@+id/newsTimestamp"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:textSize="13sp"
                     android:textColor="#757575"/>
 
@@ -102,6 +91,32 @@
                     android:padding="8dp"
                     android:background="?attr/selectableItemBackground"/>
             </LinearLayout>
+
+            <!-- NOUVEL EMPLACEMENT POUR LE LIKE -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:layout_marginBottom="8dp">
+
+                <ImageButton
+                    android:id="@+id/btnLike"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_heart_outline"
+                    android:layout_marginEnd="4dp"/>
+
+                <TextView
+                    android:id="@+id/likesCount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="#757575"/>
+            </LinearLayout>
+
 
             <View
                 android:layout_width="match_parent"
@@ -135,6 +150,7 @@
                     android:textSize="13sp"
                     style="@style/CustomOutlinedButton.Delete"/>
             </LinearLayout>
+
         </LinearLayout>
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

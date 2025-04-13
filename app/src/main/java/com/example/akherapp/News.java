@@ -10,43 +10,22 @@ public class News {
     private String title;
     private String description;
     private List<String> imageUrls;
-    private List<String> videoUrls;  // Changed to support multiple videos
+    private String videoUrl;
     private Object timestamp;
-    private String mediaType; // "image", "video", or "mixed"
+    private List<String> likes; // Pour stocker les IDs des utilisateurs qui ont aimé
 
     public News() {
         imageUrls = new ArrayList<>();
-        videoUrls = new ArrayList<>();
+        likes = new ArrayList<>(); // Initialiser la liste des likes
     }
 
-    public News(String title, String description, List<String> imageUrls, List<String> videoUrls) {
+    public News(String title, String description, List<String> imageUrls) {
         this.title = title;
         this.description = description;
         this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
-        this.videoUrls = videoUrls != null ? videoUrls : new ArrayList<>();
         this.timestamp = Timestamp.now();
-        this.setMediaType();
+        this.likes = new ArrayList<>();
     }
-
-    private void setMediaType() {
-        if (!imageUrls.isEmpty() && !videoUrls.isEmpty()) {
-            this.mediaType = "mixed";
-        } else if (!videoUrls.isEmpty()) {
-            this.mediaType = "video";
-        } else {
-            this.mediaType = "image";
-        }
-    }
-
-    // Add getters and setters for new fields
-    public List<String> getVideoUrls() { return videoUrls; }
-    public void setVideoUrls(List<String> videoUrls) {
-        this.videoUrls = videoUrls != null ? videoUrls : new ArrayList<>();
-        setMediaType();
-    }
-
-    public String getMediaType() { return mediaType; }
-    public void setMediaType(String mediaType) { this.mediaType = mediaType; }
 
     // Getters and setters
     public String getId() { return id; }
@@ -59,8 +38,8 @@ public class News {
     public void setDescription(String description) { this.description = description; }
 
     public List<String> getImageUrls() { return imageUrls; }
-    public void setImageUrls(List<String> imageUrls) {
-        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>();
+    public void setImageUrls(List<String> imageUrls) { 
+        this.imageUrls = imageUrls != null ? imageUrls : new ArrayList<>(); 
     }
 
     public Timestamp getTimestamp() {
@@ -78,8 +57,6 @@ public class News {
         this.timestamp = timestamp;
     }
 
-    // Remove these methods as we're using videoUrls List instead
-    /*
     public String getVideoUrl() {
         return videoUrl;
     }
@@ -87,5 +64,16 @@ public class News {
     public void setVideoUrl(String videoUrl) {
         this.videoUrl = videoUrl;
     }
-    */
+
+    public List<String> getLikes() {
+        return likes != null ? likes : new ArrayList<>();
+    }
+
+    public void setLikes(List<String> likes) {
+        this.likes = likes != null ? likes : new ArrayList<>();
+    }
+
+    public int getLikesCount() {
+        return getLikes().size();
+    }
 }

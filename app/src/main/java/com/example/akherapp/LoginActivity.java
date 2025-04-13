@@ -3,8 +3,12 @@ package com.example.akherapp;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.textfield.TextInputEditText;
@@ -77,6 +81,16 @@ public class LoginActivity extends AppCompatActivity {
         ProgressDialog progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("جاري تسجيل الدخول...");
         progressDialog.show();
+
+        Window window = progressDialog.getWindow();
+        if (window != null) {
+            window.setBackgroundDrawable(new ColorDrawable(Color.WHITE));
+        }
+
+        TextView messageText = progressDialog.findViewById(android.R.id.message);
+        if (messageText != null) {
+            messageText.setTextColor(Color.BLACK); // Texte en noir
+        }
 
         FirebaseMessaging.getInstance().getToken()
             .addOnCompleteListener(task -> {
