@@ -324,18 +324,20 @@ public class DocumentUploadActivity extends BaseUserActivity {
 
 
     private void setupListeners() {
-        btnUploadDoc1.setOnClickListener(v -> selectDocument(doc1Launcher));
-        btnUploadDoc2.setOnClickListener(v -> selectDocument(doc2Launcher));
-        btnUploadDoc3.setOnClickListener(v -> selectDocument(doc3Launcher));
+        btnUploadDoc1.setOnClickListener(v -> selectDocument(doc1Launcher, "application/pdf")); // Carte d'identité (PDF)
+        btnUploadDoc2.setOnClickListener(v -> selectDocument(doc2Launcher, "image/*"));         // Photo (image)
+        btnUploadDoc3.setOnClickListener(v -> selectDocument(doc3Launcher, "application/pdf")); // Attestation scolaire (PDF)
         btnSubmit.setOnClickListener(v -> uploadDocuments());
     }
 
-    private void selectDocument(ActivityResultLauncher<Intent> launcher) {
+
+    private void selectDocument(ActivityResultLauncher<Intent> launcher, String mimeType) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("*/*");
+        intent.setType(mimeType);
         intent.addCategory(Intent.CATEGORY_OPENABLE);
         launcher.launch(Intent.createChooser(intent, "اختر ملفًا"));
     }
+
 
     private void handleDocumentResult(androidx.activity.result.ActivityResult result,
                                       UriConsumer uriConsumer) {

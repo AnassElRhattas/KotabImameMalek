@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.app.ProgressDialog;
@@ -238,17 +239,49 @@ public class VerifyDocumentsActivity extends BaseActivity implements UserDocumen
     public void onViewDocument(String documentUrl) {
         if (documentUrl != null && !documentUrl.isEmpty()) {
             try {
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setDataAndType(Uri.parse(documentUrl), "*/*");
-                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                startActivity(Intent.createChooser(intent, "اختر تطبيق لفتح المستند"));
-            } catch (ActivityNotFoundException e) {
-                Toast.makeText(this, "لا يوجد تطبيق مناسب لفتح هذا المستند", Toast.LENGTH_SHORT).show();
+                StorageReference storageRef = FirebaseStorage.getInstance().getReferenceFromUrl(documentUrl);
+
+                storageRef.getMetadata()
+                        .addOnSuccessListener(storageMetadata -> {
+                            String mimeType = storageMetadata.getContentType();
+
+                            Log.d("DOCUMENT_VIEW", "MIME type récupéré depuis Firebase: " + mimeType);
+
+                            if (mimeType == null || mimeType.isEmpty()) {
+                                mimeType = "*/*";
+                                Log.w("DOCUMENT_VIEW", "Type MIME vide ou null, utilisation de */* par défaut");
+                            }
+
+                            try {
+                                Intent intent = new Intent(Intent.ACTION_VIEW);
+                                intent.setDataAndType(Uri.parse(documentUrl), mimeType);
+                                intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                startActivity(Intent.createChooser(intent, "اختر تطبيق لفتح المستند"));
+
+                                Log.d("DOCUMENT_VIEW", "Intent lancé avec le type MIME: " + mimeType);
+
+                            } catch (ActivityNotFoundException e) {
+                                Log.e("DOCUMENT_VIEW", "Aucune application trouvée pour ouvrir le type: " + mimeType, e);
+                                Toast.makeText(this, "لا يوجد تطبيق مناسب لفتح هذا المستند", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("DOCUMENT_VIEW", "Échec de récupération des métadonnées du fichier", e);
+                            Toast.makeText(this, "فشل في تحميل نوع الملف", Toast.LENGTH_SHORT).show();
+                        });
+
+            } catch (IllegalArgumentException e) {
+                Log.e("DOCUMENT_VIEW", "URL Firebase non valide: " + documentUrl, e);
+                Toast.makeText(this, "الرابط غير صالح", Toast.LENGTH_SHORT).show();
             }
         } else {
+            Log.w("DOCUMENT_VIEW", "URL du document vide ou null");
             Toast.makeText(this, "المستند غير متوفر", Toast.LENGTH_SHORT).show();
         }
     }
+
+
+
 
     // Remove these methods
 
