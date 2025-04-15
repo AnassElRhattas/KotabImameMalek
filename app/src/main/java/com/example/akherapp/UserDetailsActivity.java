@@ -14,7 +14,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import com.bumptech.glide.Glide;
 import com.example.akherapp.utils.DateUtils;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -49,6 +51,7 @@ public class UserDetailsActivity extends AppCompatActivity {
     private User user;
     private Button generateCertificateButton;
     private Button viewCertificateButton;
+    private Button deleteCertificateButton;
     private ProgressDialog progressDialog;
 
     @Override
@@ -97,13 +100,40 @@ public class UserDetailsActivity extends AppCompatActivity {
         storage = FirebaseStorage.getInstance();
         generateCertificateButton = findViewById(R.id.generateCertificateButton);
         viewCertificateButton = findViewById(R.id.viewCertificateButton);
-        
+        deleteCertificateButton = findViewById(R.id.deleteCertificateButton);
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("جاري إنشاء الشهادة...");
         progressDialog.setCancelable(false);
 
         generateCertificateButton.setOnClickListener(v -> generateUserCertificate());
         viewCertificateButton.setOnClickListener(v -> viewCertificate());
+        deleteCertificateButton.setOnClickListener(v -> {
+            if (user != null && user.getCertificateUrl() != null && !user.getCertificateUrl().isEmpty()) {
+                // Référence Firebase Storage
+                StorageReference certRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.getCertificateUrl());
+
+                // Supprimer le fichier du storage
+                certRef.delete().addOnSuccessListener(unused -> {
+                    // Supprimer l'URL de Firestore
+                    db.collection("users").document(userId)
+                            .update("certificateUrl", FieldValue.delete())
+                            .addOnSuccessListener(aVoid -> {
+                                Toast.makeText(this, "تم حذف الشهادة بنجاح", Toast.LENGTH_SHORT).show();
+                                // Recharger les boutons
+                                generateCertificateButton.setVisibility(View.VISIBLE);
+                                viewCertificateButton.setVisibility(View.GONE);
+                                deleteCertificateButton.setVisibility(View.GONE);
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(this, "فشل في حذف الرابط من قاعدة البيانات", Toast.LENGTH_SHORT).show());
+                }).addOnFailureListener(e -> {
+                    Toast.makeText(this, "فشل في حذف الشهادة من التخزين", Toast.LENGTH_SHORT).show();
+                });
+            } else {
+                Toast.makeText(this, "لا توجد شهادة لحذفها", Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private void confirmDelete() {
@@ -157,6 +187,7 @@ public class UserDetailsActivity extends AppCompatActivity {
 
                             generateCertificateButton.setVisibility(hasCertificate ? View.GONE : View.VISIBLE);
                             viewCertificateButton.setVisibility(hasCertificate ? View.VISIBLE : View.GONE);
+                            deleteCertificateButton.setVisibility(hasCertificate ? View.VISIBLE : View.GONE);
                         }
                     } else {
                         Toast.makeText(this, "المستخدم غير موجود", Toast.LENGTH_SHORT).show();

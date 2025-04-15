@@ -401,19 +401,45 @@
                             app:icon="@drawable/ic_certificate"
                             app:iconGravity="start"/>
 
-                        <com.google.android.material.button.MaterialButton
-                            android:id="@+id/viewCertificateButton"
+                        <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:backgroundTint="@color/purple_800"
+                            android:orientation="horizontal"
                             android:layout_marginTop="16dp"
-                            android:textColor="@color/white"
-                            android:text="عرض الشهادة"
-                            app:icon="@drawable/ic_oeil"
-                            app:iconGravity="start"/>
-
+                            android:gravity="center"
+                            android:weightSum="2">
 
                             <com.google.android.material.button.MaterialButton
+                                android:id="@+id/viewCertificateButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginEnd="8dp"
+                                android:backgroundTint="@color/purple_800"
+                                android:textColor="@color/white"
+                                android:text="عرض الشهادة"
+                                app:icon="@drawable/ic_oeil"
+                                app:iconGravity="start"
+                                app:iconTint="@color/white" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/deleteCertificateButton"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="8dp"
+                                android:backgroundTint="#FF5252"
+                                android:textColor="@color/white"
+                                android:text="حذف الشهادة"
+                                app:icon="@drawable/ic_delete"
+                                app:iconGravity="start"
+                                app:iconTint="@color/white" />
+                        </LinearLayout>
+
+
+
+
+                        <com.google.android.material.button.MaterialButton
                                 android:id="@+id/deleteUserButton"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
