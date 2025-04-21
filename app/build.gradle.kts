@@ -106,4 +106,6 @@ dependencies {
     implementation ("com.itextpdf:html2pdf:4.0.3")
     implementation ("com.google.android.gms:play-services-base:18.2.0")
     implementation ("com.google.android.gms:play-services-auth:20.7.0")
+    // Replace the old Jitsi implementation with this:
+    implementation("org.jitsi.react:jitsi-meet-sdk:8.1.2")
 }

@@ -62,6 +62,11 @@
         android:icon="@drawable/ic_complaints"
         android:title="إدارة الشكاوى" />
 
+    <item
+        android:id="@+id/menu_call_admin"
+        android:icon="@drawable/ic_complaints"
+        android:title="استقبال المكالمات" />
+
     <group 
         android:id="@+id/profile_group"
         android:checkableBehavior="single">

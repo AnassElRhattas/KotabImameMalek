@@ -232,6 +232,10 @@ public class MainActivity extends BaseUserActivity {
                 showDevelopmentDialog();
             } else if (id == R.id.menu_complaints && isAdmin) {
                 startActivity(new Intent(this, ManageComplaintsActivity.class));
+            } else if (id == R.id.menu_call_admin && isAdmin) {
+                startActivity(new Intent(this, AdminCallActivity.class));
+            } else if (id == R.id.menu_chat && !isAdmin) {
+                startActivity(new Intent(this, ChatActivity.class));
             } else if (id == R.id.menu_progress && !isAdmin) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
             } else if (id == R.id.menu_schedule && !isAdmin) {

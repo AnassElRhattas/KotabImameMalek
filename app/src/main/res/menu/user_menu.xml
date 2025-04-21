@@ -50,6 +50,11 @@
             android:id="@+id/menu_payments"
             android:icon="@drawable/ic_payment"
             android:title="المدفوعات"/>
+        <item
+            android:id="@+id/menu_chat"
+            android:icon="@drawable/ic_chat"
+            android:title="المحادثات"
+            app:iconTint="@color/colorPrimary" />
     </group>
     <group android:id="@+id/secondary_group"
         android:checkableBehavior="none">
