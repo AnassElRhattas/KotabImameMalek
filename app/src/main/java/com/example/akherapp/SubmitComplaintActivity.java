@@ -288,7 +288,6 @@ public class SubmitComplaintActivity extends BaseUserActivity {
                                                         submitButton.setEnabled(true);
                                                     });
 
-                                            break; // Arrêter après le premier admin trouvé
                                         }
                                     })
                                     .addOnFailureListener(e -> {
