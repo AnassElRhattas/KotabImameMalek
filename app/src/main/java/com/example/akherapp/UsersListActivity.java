@@ -93,12 +93,12 @@ public class UsersListActivity extends BaseActivity {
         db = FirebaseFirestore.getInstance();
 
         initializeViews();
-        setupToolbar();
         setupNavigationDrawer();
         setupRecyclerView();
         setupSortingAndFiltering();
         setupSearch();
         loadUsers();
+
 
         // Mettre en évidence l'élément de menu actif
         navigationView.setCheckedItem(R.id.menu_users);
@@ -108,13 +108,14 @@ public class UsersListActivity extends BaseActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("إدارة المستخدمين");
+            getSupportActionBar().setTitle("الطلبة");
         }
 
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.nav_view);
         searchInput = findViewById(R.id.searchInput);
         userCountText = findViewById(R.id.userCountText);
+        findViewById(R.id.actionExportPdf).setOnClickListener(v -> exportUsersToPdf());
 
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawerLayout, toolbar,
@@ -134,13 +135,13 @@ public class UsersListActivity extends BaseActivity {
         findViewById(R.id.generateAllCertificatesButton).setOnClickListener(v -> generateAllCertificates());
     }
 
-    private void setupToolbar() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setTitle("إدارة المستخدمين");
-        }
-    }
+//    private void setupToolbar() {
+//        Toolbar toolbar = findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setTitle("الطلبة");
+//        }
+//    }
 
     private void setupNavigationDrawer() {
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -442,13 +443,7 @@ public class UsersListActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-        if (id == R.id.action_export_pdf) {
-            exportUsersToPdf();
-            return true;
-        } else if (id == R.id.action_notifications) {
             // Gérer les notifications
-            return true;
-        }
         return super.onOptionsItemSelected(item);
     }
 

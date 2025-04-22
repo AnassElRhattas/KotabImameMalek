@@ -237,17 +237,32 @@ public class ChatActivity extends AppCompatActivity {
 
     private void startJitsiMeeting(String roomId) {
         try {
+            Toast.makeText(this, "جاري تحميل المكالمة...", Toast.LENGTH_SHORT).show();
+            
             JitsiMeetConferenceOptions options = new JitsiMeetConferenceOptions.Builder()
                     .setServerURL(new URL("https://meet.jit.si"))
                     .setRoom(roomId)
                     .setAudioMuted(false)
                     .setVideoMuted(false)
+                    .setFeatureFlag("welcomepage.enabled", false)
+                    .setFeatureFlag("prejoinpage.enabled", false)
+                    .setFeatureFlag("lobby-mode.enabled", false)
+                    .setFeatureFlag("meeting-password.enabled", false)
+                    .setFeatureFlag("security-options.enabled", false)
+                    .setFeatureFlag("invite.enabled", false)
                     .build();
 
             JitsiMeetActivity.launch(this, options);
         } catch (Exception e) {
             e.printStackTrace();
             Toast.makeText(this, "خطأ في بدء المكالمة", Toast.LENGTH_SHORT).show();
+            
+            // Update call status to failed
+            db.collection("videoCalls").document(roomId.replace("chat_", ""))
+                .update("status", "failed")
+                .addOnFailureListener(err -> {
+                    Log.e("ChatActivity", "Error updating call status", err);
+                });
         }
     }
 
