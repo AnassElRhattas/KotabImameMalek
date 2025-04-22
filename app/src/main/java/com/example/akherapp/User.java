@@ -16,6 +16,8 @@ public class User {
     private String profileImageUrl;
     private String teacher;
     private String role;
+    private boolean isOnline;
+    private Date lastSeen;
     private Float week1Progress;
     private Float week2Progress;
     private Float week3Progress;
@@ -38,6 +40,8 @@ public class User {
         this.documentsSubmitted = false;
         this.documentsVerified = false;
         this.documentsRejected = false;
+        this.isOnline = false;
+        this.lastSeen = new Date();
     }
 
     public User(String firstName, String lastName, String phone, String birthDate,
@@ -242,5 +246,21 @@ public class User {
 
     public void setFcmTokens(List<String> fcmTokens) {
         this.fcmTokens = fcmTokens;
+    }
+
+    public boolean isOnline() {
+        return isOnline;
+    }
+
+    public void setOnline(boolean online) {
+        isOnline = online;
+    }
+
+    public Date getLastSeen() {
+        return lastSeen;
+    }
+
+    public void setLastSeen(Date lastSeen) {
+        this.lastSeen = lastSeen;
     }
 }

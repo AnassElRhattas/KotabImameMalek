@@ -42,6 +42,7 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class MainActivity extends BaseUserActivity {
@@ -235,7 +236,7 @@ public class MainActivity extends BaseUserActivity {
             } else if (id == R.id.menu_call_admin && isAdmin) {
                 startActivity(new Intent(this, AdminCallActivity.class));
             } else if (id == R.id.menu_chat && !isAdmin) {
-                startActivity(new Intent(this, ChatActivity.class));
+                startActivity(new Intent(this, AdminListActivity.class));
             } else if (id == R.id.menu_progress && !isAdmin) {
                 startActivity(new Intent(this, ProgressTrackingActivity.class));
             } else if (id == R.id.menu_schedule && !isAdmin) {
@@ -491,6 +492,7 @@ public class MainActivity extends BaseUserActivity {
         // Vérifier à nouveau le rôle admin au cas où il aurait changé
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
         String role = prefs.getString("role", "");
+        String userId = prefs.getString("id", null);
         boolean wasAdmin = isAdmin;
         isAdmin = "admin".equals(role);
 
@@ -505,7 +507,25 @@ public class MainActivity extends BaseUserActivity {
             loadNews();
         }
 
+        if (userId != null && isAdmin) {
+            db.collection("users").document(userId)
+                .update("isOnline", true,
+                        "lastSeen", new Date());
+        }
+
         checkLinkedAccounts();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        String userId = prefs.getString("id", null);
+        if (userId != null && isAdmin) {
+            db.collection("users").document(userId)
+                .update("isOnline", false,
+                        "lastSeen", new Date());
+        }
     }
 
     @Override

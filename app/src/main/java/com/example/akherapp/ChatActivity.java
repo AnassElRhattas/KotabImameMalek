@@ -54,8 +54,7 @@ public class ChatActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EditText messageInput;
     private Button sendButton;
-    private DrawerLayout drawerLayout;
-    private NavigationView navigationView;
+
 
     private List<Message> messageList = new ArrayList<>();
     private MessageAdapter adapter;
@@ -68,15 +67,20 @@ public class ChatActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
         currentUserId = prefs.getString("id", null);
-        otherUserId = "b450716b-cb70-4950-ae36-a39c028cbe2a";
+        otherUserId = getIntent().getStringExtra("otherUserId");
+
+        String adminName = getIntent().getStringExtra("adminName");
+        if (adminName != null) {
+            Toolbar toolbar = findViewById(R.id.toolbar);
+            toolbar.setTitle(adminName);
+        }
 
         chatId = getChatId(currentUserId, otherUserId);
 
         recyclerView = findViewById(R.id.recyclerView);
         messageInput = findViewById(R.id.messageInput);
         sendButton = findViewById(R.id.sendButton);
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
+
 
         adapter = new MessageAdapter(messageList, currentUserId);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -86,8 +90,8 @@ public class ChatActivity extends AppCompatActivity {
         findViewById(R.id.videoCallButton).setOnClickListener(v -> startVideoCall());
 
         listenForMessages();
-        setupNavigationDrawer();
-        navigationView.setCheckedItem(R.id.menu_chat);
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
         Log.d("ChatActivity", "currentUserId: " + currentUserId);
         Log.d("ChatActivity", "otherUserId: " + otherUserId);
     }
@@ -100,97 +104,7 @@ public class ChatActivity extends AppCompatActivity {
         return user1.compareTo(user2) < 0 ? user1 + "_" + user2 : user2 + "_" + user1;
     }
 
-    private void setupNavigationDrawer() {
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawerLayout, toolbar,
-                R.string.navigation_drawer_open,
-                R.string.navigation_drawer_close);
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
 
-        navigationView.setNavigationItemSelectedListener(item -> {
-            int id = item.getItemId();
-            if (id == R.id.menu_home) {
-                startActivity(new Intent(this, MainActivity.class));
-                finish();
-            } else if (id == R.id.menu_schedule) {
-                startActivity(new Intent(this, ViewScheduleActivity.class));
-            } else if (id == R.id.menu_profile) {
-                startActivity(new Intent(this, UserProfileActivity.class));
-                finish();
-            } else if (id == R.id.menu_payments) {
-                startActivity(new Intent(this, PaymentActivity.class));
-            } else if (id == R.id.menu_progress) {
-                startActivity(new Intent(this, ProgressTrackingActivity.class));
-            } else if (id == R.id.menu_defi_user) {
-                showDevelopmentDialogRamadan();
-            } else if (id == R.id.menu_chat) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else if (id == R.id.menu_voice_recognition) {
-                startActivity(new Intent(this, VoiceRecognitionActivity.class));
-            } else if (id == R.id.menu_documents) {
-                startActivity(new Intent(this, DocumentUploadActivity.class));
-            } else if (id == R.id.menu_submit_complaint) {
-                startActivity(new Intent(this, SubmitComplaintActivity.class));
-                finish();
-            } else if (id == R.id.menu_logout) {
-                // Effacer les préférences et rediriger vers LoginActivity
-                getSharedPreferences("user_prefs", MODE_PRIVATE)
-                        .edit()
-                        .clear()
-                        .apply();
-                Intent intent = new Intent(this, LoginActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(intent);
-            }
-            return true;
-        });
-
-        // Charger les données utilisateur dans le nav header
-        View headerView = navigationView.getHeaderView(0);
-        TextView nameView = headerView.findViewById(R.id.nav_header_name);
-        TextView roleView = headerView.findViewById(R.id.nav_header_role);
-        TextView phoneView = headerView.findViewById(R.id.nav_header_phone);
-        ShapeableImageView profileImageView = headerView.findViewById(R.id.nav_header_image);
-
-        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
-        String userId = prefs.getString("id", null);
-
-        if (userId != null) {
-            db.collection("users").document(userId)
-                    .get()
-                    .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            User user = documentSnapshot.toObject(User.class);
-                            if (user != null) {
-                                // Afficher le nom complet
-                                String fullName = user.getFirstName() + " " + user.getLastName();
-                                nameView.setText(fullName.trim());
-                                phoneView.setText(user.getPhone());
-                                // Afficher le rôle
-                                roleView.setText("طالب");
-
-                                // Charger l'image de profil
-                                String imageUrl = user.getProfileImageUrl();
-                                if (imageUrl != null && !imageUrl.isEmpty()) {
-                                    Glide.with(this)
-                                            .load(imageUrl)
-                                            .placeholder(R.drawable.default_profile_image)
-                                            .error(R.drawable.default_profile_image)
-                                            .circleCrop()
-                                            .into(profileImageView);
-                                } else {
-                                    profileImageView.setImageResource(R.drawable.default_profile_image);
-                                }
-                            }
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "خطأ في تحميل معلومات المستخدم", Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
     private void sendMessage() {
         String text = messageInput.getText().toString();
         if (text.isEmpty()) return;

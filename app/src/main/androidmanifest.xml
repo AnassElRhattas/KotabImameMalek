@@ -154,6 +154,10 @@
             android:name=".AdminCallActivity"
             android:exported="false"/>
 
+        <activity
+            android:name=".AdminListActivity"
+            android:exported="false"/>
+
     <provider
         android:name="androidx.core.content.FileProvider"
         android:authorities="com.example.akherapp.fileprovider"

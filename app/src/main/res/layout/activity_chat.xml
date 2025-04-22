@@ -1,18 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.drawerlayout.widget.DrawerLayout 
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:layoutDirection="rtl"
     android:background="#F5F5F5">
-
-    <LinearLayout
-        android:id="@+id/chatLayout"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
@@ -24,9 +18,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-                app:title="الدراسة عن بعد"
                 app:titleTextColor="@android:color/white"
-                app:elevation="4dp">
+                app:elevation="4dp"
+                app:navigationIcon="@drawable/ic_arrow_back">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/videoCallButton"
@@ -88,18 +82,4 @@
                     app:cornerRadius="20dp"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-    </LinearLayout>
-
-    <com.google.android.material.navigation.NavigationView
-        android:id="@+id/nav_view"
-        android:layout_width="wrap_content"
-        android:layout_height="match_parent"
-        android:layout_gravity="start"
-        app:headerLayout="@layout/nav_header_user"
-        android:background="#FFFFFF"
-        app:itemTextColor="@android:color/black"
-        app:itemIconTint="@android:color/black"
-        app:menu="@menu/user_menu"
-        android:theme="@style/NavigationDrawerStyle"/>
-
-</androidx.drawerlayout.widget.DrawerLayout>
+</LinearLayout>
