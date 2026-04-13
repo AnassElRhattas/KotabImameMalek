@@ -11,12 +11,12 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white">  <!-- Ajout du fond blanc -->
+        android:background="#F5F5F5">
 
         <com.google.android.material.appbar.AppBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary">  <!-- Utilisation de la couleur primaire -->
+            android:background="@color/purple_800">
 
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/toolbar"
@@ -25,35 +25,326 @@
                 android:background="@color/purple_800"
                 app:titleTextColor="@color/white"
                 android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
-                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />  <!-- Mise à jour du thème -->
+                app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light" />
 
         </com.google.android.material.appbar.AppBarLayout>
 
-        <RelativeLayout
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="#F5F5F5"
+            android:fillViewport="true"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/newsRecyclerView"
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="8dp"
-                android:clipToPadding="false" />
-
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/fab"
-                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_alignParentBottom="true"
-                android:layout_margin="16dp"
-                android:src="@android:drawable/ic_input_add"
-                android:visibility="gone"
-                app:fabSize="normal" />
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:clipToPadding="false">
 
-        </RelativeLayout>
+                <!-- Greeting Section -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="4dp"
+                    app:cardBackgroundColor="@color/purple_800"
+                    android:layout_marginBottom="16dp">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical"
+                        android:padding="20dp">
+                        
+                        <TextView
+                            android:id="@+id/greetingTextView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Assalamu Alaikum, Ahmed"
+                            android:textColor="@color/white"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+                            
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="May your journey of knowledge be blessed today. You are making wonderful progress."
+                            android:textColor="#E0E0E0"
+                            android:textSize="14sp"
+                            android:layout_marginTop="8dp" />
+                            
+                        <com.google.android.material.card.MaterialCardView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            app:cardBackgroundColor="#33FFFFFF"
+                            app:cardCornerRadius="16dp"
+                            app:cardElevation="0dp"
+                            app:strokeWidth="0dp"
+                            android:layout_marginTop="16dp">
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="vertical"
+                                android:padding="12dp"
+                                android:gravity="center">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="DAILY VERSE"
+                                    android:textColor="#B3FFFFFF"
+                                    android:textSize="12sp"
+                                    android:textStyle="bold"/>
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="وَقُل رَّبِّ زِدْنِي عِلْمًا"
+                                    android:textColor="@color/white"
+                                    android:textSize="18sp"
+                                    android:textStyle="bold"
+                                    android:layout_marginTop="4dp"/>
+                            </LinearLayout>
+                        </com.google.android.material.card.MaterialCardView>
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Bento Grid -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:baselineAligned="false"
+                    android:layout_marginBottom="16dp">
+                    
+                    <!-- Progress Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="2dp"
+                        android:layout_marginEnd="8dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="80%"
+                                android:textSize="24sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/purple_800"/>
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Complete"
+                                android:textSize="12sp"
+                                android:textColor="#757575"/>
+                                
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="#E8EAF6"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="0dp"
+                                android:layout_marginTop="16dp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="MY JOURNEY"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/purple_800"
+                                    android:paddingHorizontal="8dp"
+                                    android:paddingVertical="4dp"/>
+                            </com.google.android.material.card.MaterialCardView>
+                                
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Quran Memorization"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="#212121"
+                                android:layout_marginTop="4dp"/>
+                                
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="You are only 4 Surahs away from completing your current milestone."
+                                android:textSize="12sp"
+                                android:textColor="#757575"
+                                android:layout_marginTop="4dp"
+                                android:maxLines="3"
+                                android:ellipsize="end"/>
+                                
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:layout_marginTop="12dp">
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="12"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold"
+                                        android:textColor="#212121"/>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Day Streak"
+                                        android:textSize="10sp"
+                                        android:textColor="#757575"/>
+                                </LinearLayout>
+                                <View
+                                    android:layout_width="1dp"
+                                    android:layout_height="match_parent"
+                                    android:background="#E0E0E0"
+                                    android:layout_marginHorizontal="8dp"/>
+                                <LinearLayout
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="24"
+                                        android:textSize="16sp"
+                                        android:textStyle="bold"
+                                        android:textColor="#212121"/>
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Pages Left"
+                                        android:textSize="10sp"
+                                        android:textColor="#757575"/>
+                                </LinearLayout>
+                            </LinearLayout>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Announcement Card -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="2dp"
+                        app:cardBackgroundColor="@color/colorAccent"
+                        android:layout_marginStart="8dp">
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:orientation="vertical"
+                            android:padding="16dp">
+                            
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="#33FFFFFF"
+                                app:cardCornerRadius="8dp"
+                                app:cardElevation="0dp">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ANNOUNCEMENT"
+                                    android:textSize="10sp"
+                                    android:textStyle="bold"
+                                    android:textColor="@color/white"
+                                    android:paddingHorizontal="8dp"
+                                    android:paddingVertical="4dp"/>
+                            </com.google.android.material.card.MaterialCardView>
+                            
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Ramadan Intensive Workshop"
+                                android:textSize="16sp"
+                                android:textStyle="bold"
+                                android:textColor="@color/white"
+                                android:layout_marginTop="8dp"/>
+                                
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Join Dr. Khalid for an exclusive 3-day Tafsir series starting next Friday."
+                                android:textSize="12sp"
+                                android:textColor="#E0E0E0"
+                                android:layout_marginTop="4dp"
+                                android:maxLines="3"
+                                android:ellipsize="end"/>
+                                
+                            <Space
+                                android:layout_width="match_parent"
+                                android:layout_height="0dp"
+                                android:layout_weight="1"/>
+                                
+                            <com.google.android.material.button.MaterialButton
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Register Now"
+                                android:textSize="12sp"
+                                app:cornerRadius="20dp"
+                                android:layout_marginTop="8dp"
+                                android:textColor="@color/colorAccent"
+                                app:backgroundTint="@color/white"/>
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Latest News Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+                    
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Latest News &amp; Updates"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:textColor="#212121"/>
+                        
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="See All"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/colorAccent"/>
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/newsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:nestedScrollingEnabled="false"
+                    android:clipToPadding="false" />
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="16dp"
+            android:src="@android:drawable/ic_input_add"
+            android:visibility="gone"
+            app:fabSize="normal" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

@@ -52,6 +52,7 @@ public class MainActivity extends BaseUserActivity {
     private boolean isAdmin;
     private Toolbar toolbar;
     private FloatingActionButton fab;
+    private TextView greetingTextView;
 
     // Constante pour l'action de notification
     public static final String NOTIFICATION_RECEIVED = "com.example.akherapp.NOTIFICATION_RECEIVED";
@@ -75,6 +76,7 @@ public class MainActivity extends BaseUserActivity {
         navigationView = findViewById(R.id.nav_view);
         newsRecyclerView = findViewById(R.id.newsRecyclerView);
         fab = findViewById(R.id.fab);
+        greetingTextView = findViewById(R.id.greetingTextView);
 
         // Configuration du RecyclerView
         newsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -164,6 +166,11 @@ public class MainActivity extends BaseUserActivity {
 
                                 String fullName = (user.getFirstName() != null ? user.getFirstName() : "") + " " +
                                         (user.getLastName() != null ? user.getLastName() : "");
+
+                                // Mettre à jour le message d'accueil
+                                if (greetingTextView != null && user.getFirstName() != null) {
+                                    greetingTextView.setText("Assalamu Alaikum, " + user.getFirstName());
+                                }
 
                                 // Configurer le nom selon le rôle
                                 if (nameView != null) {
